@@ -7,7 +7,7 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/config/default/peripheral/gpio/plib_gpio.h \
  ../src/config/default/peripheral/evic/plib_evic.h \
  ../src/config/default/peripheral/adc/plib_adc.h \
- c:\users\mtlantla\desktop\firmware_architecture\processor.h
+ c:\users\mtlantla\desktop\embercore\dev_c\processor.h
 
 ../src/config/default/definitions.h:
 
@@ -27,4 +27,4 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 
 ../src/config/default/peripheral/adc/plib_adc.h:
 
-c:\users\mtlantla\desktop\firmware_architecture\processor.h:
+c:\users\mtlantla\desktop\embercore\dev_c\processor.h:

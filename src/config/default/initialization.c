@@ -168,13 +168,14 @@ void SYS_Initialize ( void* data )
     BMXCONbits.BMXWSDRM = 1;
 
     /* Configure Debug Data Port */
-    DDPCONbits.TDOEN = 1;
+    DDPCONbits.JTAGEN = 0;
 
 
 
 	GPIO_Initialize();
 
     CORETIMER_Initialize();
+	UART1_Initialize();
 	BSP_Initialize();
     ADC_Initialize();
 

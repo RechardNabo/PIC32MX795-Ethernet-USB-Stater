@@ -17,17 +17,20 @@
 // Single-Sample Mode Initialization with selectable analog input pin
 void ADC_Init_SingleSample(int pin) {
     AD1PCFG = 0xFFFF;               // Set all pins to digital by default
+    
     AD1CON1 = 0x0000;               // Clear ADC control register 1
     AD1CON1bits.FORM = 0;           // Integer format
     AD1CON1bits.SSRC = 0b111;       // Auto-conversion trigger
     AD1CON1bits.CLRASAM = 1;        // Stop conversion after first interrupt
     AD1CON1bits.ASAM = 0;           // Manual sampling
     AD1CON1bits.SIDL = 0;           // Continue module operation in Idle mode
+    
     AD1CON2bits.VCFG = 0;           // AVdd and AVss as voltage reference
     AD1CON2bits.CSCNA = 0;          // No input scan
     AD1CON2bits.ALTS = 0;           // Use MUX A
     AD1CON2bits.BUFM = 0;           // 16-word buffer
     AD1CON2bits.SMPI = 0;           // Interrupt after every conversion
+    
     AD1CON3bits.ADRC = 0;           // PBCLK as ADC clock source
     AD1CON3bits.SAMC = 16;          // Auto-sample time
     AD1CON3bits.ADCS = 1;           // ADC clock divider
@@ -122,18 +125,21 @@ void ADC_Init_SingleSample(int pin) {
 // Multi-Channel Mode Initialization
 void ADC_Init_MultiChannel() {
     AD1PCFG = 0x00FF;               // Set AN0 to AN7 as analog inputs
+    
     AD1CON1 = 0x0000;               // Clear ADC control register 1
     AD1CON1bits.FORM = 0;           // Integer format
     AD1CON1bits.SSRC = 0b111;       // Auto-conversion trigger
     AD1CON1bits.CLRASAM = 1;        // Stop conversion after first interrupt
     AD1CON1bits.ASAM = 0;           // Manual sampling
     AD1CON1bits.SIDL = 0;           // Continue module operation in Idle mode
+    
     AD1CON2bits.VCFG = 0;           // AVdd and AVss as voltage reference
     AD1CON2bits.CSCNA = 1;          // Enable input scan mode
     AD1CON2bits.ALTS = 0;           // Use MUX A
     AD1CON2bits.BUFM = 0;           // 16-word buffer
     AD1CON2bits.SMPI = 7;           // Interrupt after 8 conversions
     AD1CSSL = 0x00FF;               // Select AN0 to AN7 for scanning
+    
     AD1CON3bits.ADRC = 0;           // PBCLK as ADC clock source
     AD1CON3bits.SAMC = 16;          // Auto-sample time
     AD1CON3bits.ADCS = 1;           // ADC clock divider

@@ -67,6 +67,7 @@
 // *****************************************************************************
 // *****************************************************************************
 void CORE_TIMER_Handler (void);
+void UART_1_Handler (void);
 void ADC_Handler (void);
 
 
@@ -75,12 +76,17 @@ void ADC_Handler (void);
 // Section: System Interrupt Vector definitions
 // *****************************************************************************
 // *****************************************************************************
-void __attribute__((used)) __ISR(_CORE_TIMER_VECTOR, ipl1SOFT) CORE_TIMER_Handler (void)
+void __attribute__((used)) __ISR(_CORE_TIMER_VECTOR, ipl7SRS) CORE_TIMER_Handler (void)
 {
     CORE_TIMER_InterruptHandler();
 }
 
-void __attribute__((used)) __ISR(_ADC_VECTOR, ipl1SOFT) ADC_Handler (void)
+void __attribute__((used)) __ISR(_UART_1_VECTOR, ipl7SRS) UART_1_Handler (void)
+{
+    UART_1_InterruptHandler();
+}
+
+void __attribute__((used)) __ISR(_ADC_VECTOR, ipl7SRS) ADC_Handler (void)
 {
     ADC_InterruptHandler();
 }

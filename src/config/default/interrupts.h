@@ -58,6 +58,7 @@
 // *****************************************************************************
 
 void CORE_TIMER_InterruptHandler( void );
+void UART_1_InterruptHandler( void );
 void ADC_InterruptHandler( void );
 
 
