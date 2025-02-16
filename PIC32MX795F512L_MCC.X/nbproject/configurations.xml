@@ -25,6 +25,28 @@
             <logicalFolder name="gpio" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/gpio/plib_gpio.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
+              <logicalFolder name="master" displayName="master" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c1_master_local.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c_master_common.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c1_master.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c2_master_local.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c2_master.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="slave" displayName="slave" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c1_slave_local.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c1_slave.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c_slave_common.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c2_slave.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c2_slave_local.h</itemPath>
+              </logicalFolder>
+              <itemPath>../src/config/default/peripheral/i2c/plib_i2c_smbus_common.h</itemPath>
+              <itemPath>../src/config/default/peripheral/i2c/plib_i2c1_master_slave.h</itemPath>
+              <itemPath>../src/config/default/peripheral/i2c/plib_i2c2_master_slave.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="power" displayName="power" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/power/plib_power.h</itemPath>
+            </logicalFolder>
             <logicalFolder name="uart" displayName="uart" projectFiles="true">
               <itemPath>../src/config/default/peripheral/uart/plib_uart1.h</itemPath>
               <itemPath>../src/config/default/peripheral/uart/plib_uart_common.h</itemPath>
@@ -75,6 +97,22 @@
             </logicalFolder>
             <logicalFolder name="gpio" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/gpio/plib_gpio.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
+              <logicalFolder name="master" displayName="master" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c1_master.c</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c2_master.c</itemPath>
+              </logicalFolder>
+              <logicalFolder name="slave" displayName="slave" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c1_slave.c</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/slave/plib_i2c2_slave.c</itemPath>
+              </logicalFolder>
+              <itemPath>../src/config/default/peripheral/i2c/plib_i2c1_master_slave.c</itemPath>
+              <itemPath>../src/config/default/peripheral/i2c/plib_i2c_smbus_common.c</itemPath>
+              <itemPath>../src/config/default/peripheral/i2c/plib_i2c2_master_slave.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="power" displayName="power" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/power/plib_power.c</itemPath>
             </logicalFolder>
             <logicalFolder name="uart" displayName="uart" projectFiles="true">
               <itemPath>../src/config/default/peripheral/uart/plib_uart1.c</itemPath>

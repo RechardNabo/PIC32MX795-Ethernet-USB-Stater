@@ -49,6 +49,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "peripheral/coretimer/plib_coretimer.h"
+#include "peripheral/i2c/plib_i2c1_master_slave.h"
+#include "peripheral/power/plib_power.h"
+#include "peripheral/i2c/plib_i2c2_master_slave.h"
 #include "peripheral/uart/plib_uart1.h"
 #include "bsp/bsp.h"
 #include "peripheral/clk/plib_clk.h"

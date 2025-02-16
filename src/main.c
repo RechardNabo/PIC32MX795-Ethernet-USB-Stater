@@ -6,26 +6,34 @@
 #include "../../../../../../../../../Users/Mtlantla/Desktop/EmberCore/Dev_C/Processor.h"
 
 PROCESSOR _PIC32MX_;
+// Define slave address (example address, adjust as needed)
+#define SLAVE_ADDR      0x50
+#define I2C_CLOCK_SPEED 100000
+volatile bool g_transferComplete = false;
 //##############################################################################
 
 
 // Callback function implementation
-void ADC_Callback(uintptr_t context)
-{
+void ADC_Callback(uintptr_t context){
     char msg[50];
     uint32_t result = ADC_ResultGet(ADC_RESULT_BUFFER_0);
     uint32_t result2 = ADC_ResultGet(ADC_RESULT_BUFFER_1);
     sprintf(msg,"ADC Value : %d %d", result,result2);
 }
+
+
 // Callback flag for transmission completion
 volatile bool txComplete = false;
 
 // Callback function for UART1 write
-void UART1_WriteCallback(uintptr_t context)
-{
+void UART1_WriteCallback(uintptr_t context){
     txComplete = true; // Set flag when data is transmitted
 }
 
+void I2C_CallbackHandler(uintptr_t context)
+{
+    // Transfer completed
+}
 //##############################################################################
 
 
@@ -34,9 +42,7 @@ void ADC_CODE(void);
 void UART1_Code(void);
 void UART1_Config(int BaudRate);
 void UART1_SendString(const char* str);
-
-
-
+void I2C_Code(void);
 
 //##############################################################################
 int main ( void ){
@@ -52,13 +58,20 @@ int main ( void ){
     ADC_Enable();
     UART1_Config(9600);
     
+    I2C_TRANSFER_SETUP i2cSetup;
+    i2cSetup.clkSpeed = I2C_CLOCK_SPEED;  // Set clock speed to 100 kHz
+    if (!I2C2_MasterTransferSetup(&i2cSetup, 0))  // 0 means use default source clock
+    {
+        printf("I2C clock speed configuration failed.\n");
+        while (1);  // Halt if configuration fails
+    }
+    I2C2_MasterCallbackRegister(I2C_CallbackHandler, 0);
+    
     while ( true ){
         ADC_CODE();
-        UART1_SendString("UART1 Initialized\r\n");
-        UART1_SendString("Baud Rate: 9600\r\n");
-        UART1_SendString("Configuration: 8N1\r\n");
-        UART1_SendString("Ready for communication!\r\n");
-        CORETIMER_DelayMs(100);
+        UART1_SendString("Sending data using UART_1\r\n");
+        I2C_Code();
+        CORETIMER_DelayMs(200);
         LED2_Toggle();
         
         switch(SWITCH1_Get()){
@@ -130,3 +143,32 @@ void UART1_SendString(const char* str){
     while (!txComplete); // Wait for transmission to complete
 }
 //##############################################################################
+
+void I2C_Code(void){
+// Message to send
+    uint8_t message[] = "Hello World";
+    size_t messageLength = strlen((char*)message);
+    
+    // Wait if I2C bus is busy
+    while(I2C2_MasterIsBusy());
+    uint16_t slaveAddressWrite = (SLAVE_ADDR << 1);  // Write operation (R/W = 0)
+    if(I2C2_MasterWrite(slaveAddressWrite, message, messageLength))
+    {
+        // Wait for the transfer to complete
+        while(I2C2_MasterIsBusy());
+        
+        // Check for any errors
+        if(I2C2_MasterErrorGet() == I2C_ERROR_NONE)
+        {
+            // Message sent successfully
+            // Add your success handling code here
+            LED1_Toggle();
+        }
+        else
+        {
+            // Error occurred
+            // Add your error handling code here
+            LED1_Off();
+        }
+    }
+}
