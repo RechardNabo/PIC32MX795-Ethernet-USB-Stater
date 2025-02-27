@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project>                                  
-  <executable name="dist/default/production/PIC32MX795F512_L_ALL.X.production.elf">                 
+  <executable name="dist/default/debug/PIC32MX795F512L_CAN.X.debug.elf">                 
     <memory name="program">                 
       <units>bytes</units>                 
       <length>531968</length>                 
-      <used>36372</used>                     
-      <free>495596</free>                     
+      <used>5656</used>                     
+      <free>526312</free>                     
     </memory>                              
     <memory name="data">              
       <units>bytes</units>                 
       <length>131072</length>                 
-      <used>1008</used>                     
-      <free>130064</free>                     
+      <used>756</used>                     
+      <free>130316</free>                     
     </memory>                              
   </executable>                            
 </project>                                 

@@ -6,9 +6,10 @@
 #include "ECCP.h"
 #include "PWM.h"
 #include "RTC.h"
-#include "DMA.h"
+//#include "DMA.h"
 #include "I2C.h"
 //#include "SPI.h"
+#include "CAN.h"
 
 
 #define LED_1_PIN           (TRISDbits.TRISD0)
@@ -85,9 +86,9 @@ void SPI1_WriteString(const char *data) {
         SPI1_WriteChar(*data++);   // Send each character
     }
 }
-void main(void) {
+int main(void) {
     //CONFIGURE_PIN_AS_OUTPUT(LED_1_PIN);
-    char msg[20];
+    char msg[50];
     ADC_Init_SingleSample(ANALOG_A15);
     UART1_Init(UART_BAUDRATE_115200);
     I2C2_Init();
