@@ -59,8 +59,7 @@ int main ( void ){
         
         // Use two 500ms delays to create a 1-second interval
         CORETIMER_DelayMs(500);
-        CORETIMER_DelayMs(500);
-        
+        LED3_Toggle();
         SYS_Tasks();
     }
     /* Execution should not come here during normal operation */
