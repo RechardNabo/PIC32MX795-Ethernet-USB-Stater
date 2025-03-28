@@ -43,6 +43,7 @@ int main ( void ){
         /* Detect architecture */
     DetectArchitecture(archMessage, &archLength);
     CORETIMER_Start();
+    ADC_Enable();
     while ( true ){
         switch(state){
             case CAN:
@@ -57,7 +58,9 @@ int main ( void ){
             
             case ADC:
                 LED3_On();
+                    
                     ADC_ConversionStart();
+                    ADC_SamplingStart();
                     while(!ADC_ResultIsReady());
                     ADC_RAW = ADC_ResultGet(ADC_RESULT_BUFFER_0);
                     sprintf(MSG, "ADC:0x%x",ADC_RAW);
