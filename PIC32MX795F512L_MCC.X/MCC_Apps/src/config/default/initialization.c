@@ -64,10 +64,10 @@
 /*** DEVCFG1 ***/
 #pragma config FNOSC =      PRIPLL
 #pragma config FPBDIV =     DIV_1
-#pragma config FSOSCEN =    ON
-#pragma config IESO =       ON
+#pragma config FSOSCEN =    OFF
+#pragma config IESO =       OFF
 #pragma config POSCMOD =    XT
-#pragma config OSCIOFNC =   ON
+#pragma config OSCIOFNC =   OFF
 #pragma config FCKSM =      CSDCMD
 #pragma config WDTPS =      PS1048576
 #pragma config FWDTEN =     OFF
@@ -78,13 +78,13 @@
 #pragma config FPLLMUL =    MUL_20
 #pragma config FPLLODIV =   DIV_1
 #pragma config UPLLEN =     OFF
-#pragma config UPLLIDIV =   DIV_6
+#pragma config UPLLIDIV =   DIV_1
 
 /*** DEVCFG3 ***/
 #pragma config FSRSSEL =    PRIORITY_7
-#pragma config FVBUSONIO =  ON
+#pragma config FVBUSONIO =  OFF
 #pragma config USERID =     0xffff
-#pragma config FUSBIDIO =   ON
+#pragma config FUSBIDIO =   OFF
 #pragma config FMIIEN =     ON
 #pragma config FETHIO =     ON
 #pragma config FCANIO =     ON
@@ -189,8 +189,8 @@ void SYS_Initialize ( void* data )
 
     OCMP2_Initialize();
 
-    CORETIMER_Initialize();
     I2C1_Initialize();
+    CORETIMER_Initialize();
     I2C2_Initialize();
 	UART1_Initialize();
 

@@ -16,9 +16,9 @@ build/default/production/_ext/1171490990/initialization.o: \
  ../src/config/default/peripheral/ocmp/plib_ocmp1.h \
  ../src/config/default/peripheral/ocmp/plib_ocmp_common.h \
  ../src/config/default/peripheral/ocmp/plib_ocmp2.h \
- ../src/config/default/peripheral/coretimer/plib_coretimer.h \
  ../src/config/default/peripheral/i2c/master/plib_i2c1_master.h \
  ../src/config/default/peripheral/i2c/master/plib_i2c_master_common.h \
+ ../src/config/default/peripheral/coretimer/plib_coretimer.h \
  ../src/config/default/peripheral/i2c/master/plib_i2c2_master.h \
  ../src/config/default/peripheral/uart/plib_uart1.h \
  ../src/config/default/peripheral/uart/plib_uart_common.h \
@@ -66,11 +66,11 @@ build/default/production/_ext/1171490990/initialization.o: \
 
 ../src/config/default/peripheral/ocmp/plib_ocmp2.h:
 
-../src/config/default/peripheral/coretimer/plib_coretimer.h:
-
 ../src/config/default/peripheral/i2c/master/plib_i2c1_master.h:
 
 ../src/config/default/peripheral/i2c/master/plib_i2c_master_common.h:
+
+../src/config/default/peripheral/coretimer/plib_coretimer.h:
 
 ../src/config/default/peripheral/i2c/master/plib_i2c2_master.h:
 
