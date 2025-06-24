@@ -160,8 +160,17 @@
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
+      <itemPath>../src/can_handler.c</itemPath>
+      <itemPath>../src/can_handler.h</itemPath>
+      <itemPath>../src/modbus_rtu.c</itemPath>
+      <itemPath>../src/modbus_rtu.h</itemPath>
+      <itemPath>../src/rs485_handler.c</itemPath>
+      <itemPath>../src/rs485_handler.h</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../src</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">

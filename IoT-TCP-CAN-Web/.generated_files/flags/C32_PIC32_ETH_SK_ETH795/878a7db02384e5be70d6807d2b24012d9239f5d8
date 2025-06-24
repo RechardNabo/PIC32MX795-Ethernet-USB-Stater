@@ -1,0 +1,1 @@
+ $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-common -DCFG_INCLUDE_PIC32_ETH_SK_ETH795 -Wall   -DXPRJ_C32_PIC32_ETH_SK_ETH795=$(CND_CONF)    $(COMPARISON_BUILD)  -mdfp="${DFP_DIR}"  C:\Users\rnabo\Desktop\GitLab-Repos\IoT-TCP-CAN-Web\SRAM.c

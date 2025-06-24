@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC32MX Web Application</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <nav class="navbar">
+      <a href="index.htm" class="navbar-brand">PIC32MX</a>
+      <button id="menu-toggle" class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="navbar-nav" class="navbar-nav">
+        <li class="nav-item"><a href="index.htm" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="network.htm" class="nav-link">Network</a></li>
+        <li class="nav-item"><a href="status.htm" class="nav-link">Status</a></li>
+        <li class="nav-item"><a href="ping.htm" class="nav-link">Ping</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="notification-area"></div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h1 class="card-title">PIC32MX Web Application</h1>
+        <p class="card-subtitle">Microchip PIC32MX Embedded Web Server</p>
+      </div>
+      
+      <div class="card-body">
+        <p>Welcome to the PIC32MX Web Server. This application provides a web interface for configuring and monitoring your PIC32MX device.</p>
+        
+        <div class="info-box">
+          <p>Device IP Address: <strong>192.168.18.22</strong></p>
+          <p>Device Location: <strong>~Location~</strong></p>
+          <p>Current Time: <span id="current-time">00:00:00</span></p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <h2>Features</h2>
+        <ul>
+          <li><strong>Network Configuration</strong> - View and modify network settings</li>
+          <li><strong>Status Monitoring</strong> - Check the status of your device</li>
+          <li><strong>Ping Tool</strong> - Test network connectivity</li>
+        </ul>
+      </div>
+      
+      <div class="version-info">
+        <table>
+          <tr>
+            <td>Device Software Version:</td>
+            <td><strong>~version~</strong></td>
+          </tr>
+          <tr>
+            <td>Build Date:</td>
+            <td><strong>~builddate~</strong></td>
+          </tr>
+          <tr>
+            <td>Web Interface Version:</td>
+            <td><strong>2.0</strong></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2025 PIC32MX Web Application</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
