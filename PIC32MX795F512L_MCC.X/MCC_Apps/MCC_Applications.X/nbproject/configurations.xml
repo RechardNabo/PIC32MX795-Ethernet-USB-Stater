@@ -166,6 +166,8 @@
       <itemPath>../src/modbus_rtu.h</itemPath>
       <itemPath>../src/rs485_handler.c</itemPath>
       <itemPath>../src/rs485_handler.h</itemPath>
+      <itemPath>../src/rf_transmitter.c</itemPath>
+      <itemPath>../src/rf_transmitter.h</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

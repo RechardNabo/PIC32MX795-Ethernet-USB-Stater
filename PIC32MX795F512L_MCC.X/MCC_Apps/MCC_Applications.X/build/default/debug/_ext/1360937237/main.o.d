@@ -29,7 +29,8 @@ build/default/debug/_ext/1360937237/main.o: ../src/main.c \
  ../src/config/default/peripheral/spi/spi_master/plib_spi2_master.h \
  ../src/config/default/peripheral/spi/spi_master/plib_spi_master_common.h \
  ../src/config/default/peripheral/spi/spi_master/plib_spi1_master.h \
- ../src/can_handler.h ../src/modbus_rtu.h ../src/rs485_handler.h
+ ../src/can_handler.h ../src/modbus_rtu.h ../src/rs485_handler.h \
+ ../src/rf_transmitter.h
 
 ../src/config/default/definitions.h:
 
@@ -98,3 +99,5 @@ build/default/debug/_ext/1360937237/main.o: ../src/main.c \
 ../src/modbus_rtu.h:
 
 ../src/rs485_handler.h:
+
+../src/rf_transmitter.h:

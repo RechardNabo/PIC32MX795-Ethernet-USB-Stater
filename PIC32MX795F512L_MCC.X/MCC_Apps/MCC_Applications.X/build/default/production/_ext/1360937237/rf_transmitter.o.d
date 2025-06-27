@@ -1,4 +1,5 @@
-build/default/production/_ext/1360937237/main.o: ../src/main.c \
+build/default/production/_ext/1360937237/rf_transmitter.o: \
+ ../src/rf_transmitter.c ../src/rf_transmitter.h \
  ../src/config/default/definitions.h ../src/config/default/bsp/bsp.h \
  ../src/config/default/device.h \
  ../src/config/default/toolchain_specifics.h \
@@ -28,9 +29,9 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/config/default/peripheral/tmr1/plib_tmr1_common.h \
  ../src/config/default/peripheral/spi/spi_master/plib_spi2_master.h \
  ../src/config/default/peripheral/spi/spi_master/plib_spi_master_common.h \
- ../src/config/default/peripheral/spi/spi_master/plib_spi1_master.h \
- ../src/can_handler.h ../src/modbus_rtu.h ../src/rs485_handler.h \
- ../src/rf_transmitter.h
+ ../src/config/default/peripheral/spi/spi_master/plib_spi1_master.h
+
+../src/rf_transmitter.h:
 
 ../src/config/default/definitions.h:
 
@@ -93,11 +94,3 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 ../src/config/default/peripheral/spi/spi_master/plib_spi_master_common.h:
 
 ../src/config/default/peripheral/spi/spi_master/plib_spi1_master.h:
-
-../src/can_handler.h:
-
-../src/modbus_rtu.h:
-
-../src/rs485_handler.h:
-
-../src/rf_transmitter.h:

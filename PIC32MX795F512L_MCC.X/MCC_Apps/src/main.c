@@ -24,10 +24,12 @@
 #include "can_handler.h"                // CAN communication functions
 #include "modbus_rtu.h"                // Modbus RTU protocol
 #include "rs485_handler.h"             // RS485 communication
+#include "rf_transmitter.h"            // RF 433MHz transmitter
 #define CAN         (0x01)
 #define UART        (CAN+0x01)
 #define MODBUS      (UART+0x01)
-
+#define RF          (MODBUS+0x01)
+#define DELAY       200
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point
@@ -41,6 +43,9 @@ int main ( void ){
     SYS_Initialize ( NULL );
     CORETIMER_Start();
     //ADC_Enable();
+    
+    // Initialize RF transmitter
+    RF_Init();
     
     // Configure UART2 for 9600 baud
     UART_SERIAL_SETUP serialSetup = {
@@ -74,33 +79,62 @@ int main ( void ){
                 
                 // Then send application message
                 memset(canMsg, 0, sizeof(canMsg));
+                CORETIMER_DelayMs(DELAY);
                 if(!CAN_ProcessMessage(messageID, canMsg, sizeof(canMsg))) {
                     LED2_On();
                 }
-                CORETIMER_DelayMs(500);
                 state = UART;
                 LED3_Off();
-                CORETIMER_DelayMs(500);
+                CORETIMER_DelayMs(DELAY);
             break;
             
             case UART:
                 LED3_On();
                 RS485_SendMessage(RS485_MESSAGE);
-                CORETIMER_DelayMs(500);
+                CORETIMER_DelayMs(DELAY);
                 RS485_CheckForReceivedData();
-                CORETIMER_DelayMs(500);
+                CORETIMER_DelayMs(DELAY);
                 LED3_Off();
                 state = MODBUS;
-                CORETIMER_DelayMs(500);
+                CORETIMER_DelayMs(DELAY);
                 break;
                 
             case MODBUS:
                 LED3_On();
                 Modbus_Process();
-                CORETIMER_DelayMs(500);
+                CORETIMER_DelayMs(DELAY);
                 LED3_Off();
-                state = CAN;
+                state = RF;
+                CORETIMER_DelayMs(DELAY);
+                break;
+                
+            case RF:
+                LED3_On();
+                LED2_On(); // Visual indicator for RF transmission
+                
+                // Message to send
+                const char* message = "PIC32MX RF TEST";
+                
+                // First, demonstrate basic ASCII transmission (original method)
+                printf("\nSending basic ASCII message...\n");
+                RF_SendMessage(message);
                 CORETIMER_DelayMs(500);
+                
+                // Then demonstrate enhanced protocol with framing
+                printf("\nSending with protocol framing...\n");
+                RF_SendStructuredPacket((const uint8_t*)message, strlen(message));
+                CORETIMER_DelayMs(500);
+                
+                // Finally demonstrate Manchester encoding for noisy environments
+                printf("\nSending with Manchester encoding...\n");
+                RF_SendEncodedPacket((const uint8_t*)message, strlen(message));
+                CORETIMER_DelayMs(500);
+                
+                // Turn off LEDs and move to next state
+                LED3_Off();
+                LED2_Off();
+                state = CAN;
+                CORETIMER_DelayMs(DELAY);
                 break;
         }
         SYS_Tasks();
