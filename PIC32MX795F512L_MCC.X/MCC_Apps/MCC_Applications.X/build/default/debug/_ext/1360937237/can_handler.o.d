@@ -1,6 +1,7 @@
 build/default/debug/_ext/1360937237/can_handler.o: ../src/can_handler.c \
- ../src/can_handler.h ../src/config/default/definitions.h \
- ../src/config/default/bsp/bsp.h ../src/config/default/device.h \
+ ../src/can_handler.h ../src/../../../CAN_bus.h \
+ ../src/config/default/definitions.h ../src/config/default/bsp/bsp.h \
+ ../src/config/default/device.h \
  ../src/config/default/toolchain_specifics.h \
  ../src/config/default/peripheral/can/plib_can1.h \
  ../src/config/default/peripheral/can/plib_can_common.h \
@@ -31,6 +32,8 @@ build/default/debug/_ext/1360937237/can_handler.o: ../src/can_handler.c \
  ../src/config/default/peripheral/spi/spi_master/plib_spi1_master.h
 
 ../src/can_handler.h:
+
+../src/../../../CAN_bus.h:
 
 ../src/config/default/definitions.h:
 

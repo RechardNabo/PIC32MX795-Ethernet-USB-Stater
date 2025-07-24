@@ -44,6 +44,9 @@ int main ( void ){
     CORETIMER_Start();
     //ADC_Enable();
     
+    // Initialize CAN extended IDs
+    CAN_InitializeIDs();
+    
     // Initialize RF transmitter
     RF_Init();
     
@@ -75,12 +78,36 @@ int main ( void ){
                 
                 // First send architecture info
                 CAN_DetectArchitecture(canMsg, &length);
-                CAN_ProcessMessage(messageID, canMsg, length);
+                if(!CAN_ProcessMessage(architectureID, canMsg, length)) {
+                    LED2_On();
+                }
+                CORETIMER_DelayMs(DELAY/2);
                 
-                // Then send application message
+                // Then send dummy temperature data
                 memset(canMsg, 0, sizeof(canMsg));
-                CORETIMER_DelayMs(DELAY);
-                if(!CAN_ProcessMessage(messageID, canMsg, sizeof(canMsg))) {
+                canMsg[0] = 25; // Example temperature value (25°C)
+                canMsg[1] = 0;  // Temperature decimal part
+                if(!CAN_ProcessMessage(temperatureID, canMsg, 2)) {
+                    LED2_On();
+                }
+                CORETIMER_DelayMs(DELAY/2);
+                
+                // Send dummy voltage data
+                memset(canMsg, 0, sizeof(canMsg));
+                // Pack a 3.3V value: 3.3 * 1000 = 3300 (to preserve 3 decimal places)
+                canMsg[0] = (3300 & 0xFF);       // LSB
+                canMsg[1] = (3300 >> 8) & 0xFF;  // MSB
+                if(!CAN_ProcessMessage(voltageID, canMsg, 2)) {
+                    LED2_On();
+                }
+                CORETIMER_DelayMs(DELAY/2);
+                
+                // Send dummy current data
+                memset(canMsg, 0, sizeof(canMsg));
+                // Pack a 100mA value: 0.1 * 1000 = 100 (to preserve 3 decimal places)
+                canMsg[0] = (100 & 0xFF);        // LSB
+                canMsg[1] = (100 >> 8) & 0xFF;   // MSB
+                if(!CAN_ProcessMessage(currentID, canMsg, 2)) {
                     LED2_On();
                 }
                 state = UART;

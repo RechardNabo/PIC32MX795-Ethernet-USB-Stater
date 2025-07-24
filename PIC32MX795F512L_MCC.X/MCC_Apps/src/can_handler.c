@@ -1,6 +1,28 @@
 #include "can_handler.h"
 #include "definitions.h"
-uint32_t messageID = 0x128;
+
+// Define source and destination node IDs
+#define PIC32_NODE_ID           0x10    // This PIC32 node ID
+#define BROADCAST_DEST         0xFF    // Broadcast to all nodes
+
+// Create extended CAN IDs for different message types
+uint32_t architectureID = 0;
+uint32_t temperatureID = 0;
+uint32_t voltageID = 0;
+uint32_t currentID = 0;
+uint32_t powerID = 0;
+
+// Initialize the CAN IDs in a function to be called at startup
+void CAN_InitializeIDs(void) {
+    // Architecture ID message - high priority (5)
+    architectureID = MAKE_EXTENDED_CAN_ID(PRIORITY_COMMAND, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ARCHITECTURE_ID);
+    
+    // Sensor data messages - normal priority (8)
+    temperatureID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_TEMP_AMBIENT);
+    voltageID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ELECTRICAL_DC_VOLTAGE);
+    currentID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ELECTRICAL_DC_CURRENT);
+    powerID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ELECTRICAL_ACTIVE_POWER);
+}
 bool CAN_ProcessMessage(uint32_t messageID, uint8_t* message, uint8_t length)
 {
     bool messageStatus = CAN1_MessageTransmit(messageID, length, message, 0, CAN_MSG_TX_DATA_FRAME);
