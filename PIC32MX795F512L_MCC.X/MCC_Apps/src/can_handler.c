@@ -11,6 +11,8 @@ uint32_t temperatureID = 0;
 uint32_t voltageID = 0;
 uint32_t currentID = 0;
 uint32_t powerID = 0;
+uint32_t microphoneID = 0;       // For microphone/sound level data
+VibrationIDs_t vibrationIDs;    // Defined in can_handler.h
 
 // Initialize the CAN IDs in a function to be called at startup
 void CAN_InitializeIDs(void) {
@@ -22,6 +24,11 @@ void CAN_InitializeIDs(void) {
     voltageID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ELECTRICAL_DC_VOLTAGE);
     currentID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ELECTRICAL_DC_CURRENT);
     powerID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ELECTRICAL_ACTIVE_POWER);
+    
+    // Microphone and vibration sensor messages
+    microphoneID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ENV_MICROPHONE_LEVEL);
+    vibrationIDs.vibration1ID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_MOTION_VIBRATION);
+    vibrationIDs.vibration2ID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_MOTION_VIBRATION + 1);
 }
 bool CAN_ProcessMessage(uint32_t messageID, uint8_t* message, uint8_t length)
 {

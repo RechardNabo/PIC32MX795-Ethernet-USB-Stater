@@ -11,6 +11,14 @@ extern uint32_t temperatureID;
 extern uint32_t voltageID;
 extern uint32_t currentID;
 extern uint32_t powerID;
+extern uint32_t microphoneID;  // For microphone/sound level data
+
+typedef struct {
+    uint32_t vibration1ID;     // For first vibration sensor
+    uint32_t vibration2ID;     // For second vibration sensor
+} VibrationIDs_t;
+
+extern VibrationIDs_t vibrationIDs;
 
 // Function prototypes
 void CAN_InitializeIDs(void);
