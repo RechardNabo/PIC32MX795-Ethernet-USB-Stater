@@ -27,8 +27,9 @@ void CAN_InitializeIDs(void) {
     
     // Microphone and vibration sensor messages
     microphoneID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_ENV_MICROPHONE_LEVEL);
-    vibrationIDs.vibration1ID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_MOTION_VIBRATION);
-    vibrationIDs.vibration2ID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_MOTION_VIBRATION + 1);
+    // Vibration sensors read digital GPIO states, so use digital I/O message type
+    vibrationIDs.vibration1ID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_DIO_INPUT_STATES_INDIVIDUAL);
+    vibrationIDs.vibration2ID = MAKE_EXTENDED_CAN_ID(PRIORITY_SENSOR_DATA, PIC32_NODE_ID, EXT_DEST_BROADCAST, MSG_DIO_INPUT_STATES_INDIVIDUAL + 1);
 }
 bool CAN_ProcessMessage(uint32_t messageID, uint8_t* message, uint8_t length)
 {

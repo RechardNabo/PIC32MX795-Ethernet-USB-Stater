@@ -3,97 +3,97 @@ Archive member included to satisfy reference by file (symbol)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1\libgcc.a(floatunsisf.o)
                               build/default/production/_ext/60165182/plib_can2.o (__floatunsisf)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(default-on-reset.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o (_on_reset)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o (_on_reset)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(default-on-bootstrap.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o (_on_bootstrap)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o (_on_bootstrap)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(default-nmi-handler.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o (_nmi_handler)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o (_nmi_handler)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(pic32_data_init_core.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o (__pic32_data_init)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o (__pic32_data_init)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(general-exception.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o (_general_exception_context)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o (_general_exception_context)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector1.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_1)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_1)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector2.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_2)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_2)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector3.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_3)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_3)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector6.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_6)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_6)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector7.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_7)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_7)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector10.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_10)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_10)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector11.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_11)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_11)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector12.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_12)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_12)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector13.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_13)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_13)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector14.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_14)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_14)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector15.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_15)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_15)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector16.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_16)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_16)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector17.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_17)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_17)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector18.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_18)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_18)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector19.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_19)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_19)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector20.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_20)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_20)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector21.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_21)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_21)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector22.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_22)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_22)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector26.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_26)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_26)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector27.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_27)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_27)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector28.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_28)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_28)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector29.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_29)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_29)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector30.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_30)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_30)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector34.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_34)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_34)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector35.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_35)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_35)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector36.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_36)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_36)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector37.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_37)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_37)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector38.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_38)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_38)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector39.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_39)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_39)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector40.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_40)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_40)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector41.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_41)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_41)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector42.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_42)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_42)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector43.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_43)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_43)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector44.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_44)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_44)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector45.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_45)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_45)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector46.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_46)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_46)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector47.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_47)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_47)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector48.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_48)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_48)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector49.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_49)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_49)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector50.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_50)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_50)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector51.o)
-                              C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o (__vector_dispatch_51)
+                              C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o (__vector_dispatch_51)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(defaultinterrupt.o)
                               c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(vector1.o) (_DefaultInterrupt)
 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libc-size-musl.a(strlen.o)
@@ -402,7 +402,7 @@ Microchip PIC32 Memory-Usage Report By Module
         1112           0          52        1164         48c    plib_uart1.o            build/default/production/_ext/1865657120/plib_uart1.o
          632           0           0         632         278    fp32subadd.o            libm.a
          456           0          32         488         1e8    plib_can1.o             build/default/production/_ext/60165182/plib_can1.o
-         484           0           0         484         1e4    ccky8B3J.o              C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+         484           0           0         484         1e4    ccQeEPqa.o              C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
          444           0           0         444         1bc    fp32mul.o               libm.a
          408           0          16         424         1a8    plib_coretimer.o        build/default/production/_ext/1249264884/plib_coretimer.o
          296           0           0         296         128    initialization.o        build/default/production/_ext/1171490990/initialization.o
@@ -1097,25 +1097,25 @@ Discarded input sections
                 0x0000000000000000        0x1 build/default/production/_ext/1360937237/rf_transmitter.o
  .sdata.rf_baudRate
                 0x0000000000000000        0x4 build/default/production/_ext/1360937237/rf_transmitter.o
- .text          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
- .data          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
- .bss           0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
- .reginfo       0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+ .text          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
+ .data          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
+ .bss           0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
  .MIPS.abiflags
-                0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
- .text          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
- .data          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
- .bss           0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
- .reginfo       0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
+                0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
+ .text          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
+ .data          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
+ .bss           0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
  .MIPS.abiflags
-                0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
- .text          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
- .data          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
- .bss           0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
- .reginfo       0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
+                0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
+ .text          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
+ .data          0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
+ .bss           0x0000000000000000        0x0 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
  .MIPS.abiflags
-                0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
- .discard       0x0000000000000000       0xd0 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
+                0x0000000000000000       0x18 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
+ .discard       0x0000000000000000       0xd0 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
  .data          0x0000000000000000        0x0 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\pic32_software_reset.o
  .bss           0x0000000000000000        0x0 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\pic32_software_reset.o
  .reginfo       0x0000000000000000       0x18 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\pic32_software_reset.o
@@ -2183,16 +2183,16 @@ END GROUP
 
 .reset          0x00000000bfc00000      0x170
  *(.reset)
- .reset         0x00000000bfc00000        0x8 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+ .reset         0x00000000bfc00000        0x8 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
                 0x00000000bfc00000                _reset
  *(.reset.startup)
  .reset.startup
-                0x00000000bfc00008      0x168 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+                0x00000000bfc00008      0x168 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
                 0x00000000bfc00008                _startup
 
 .bev_excpt      0x00000000bfc00380       0x10
  *(.bev_handler)
- .bev_handler   0x00000000bfc00380       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+ .bev_handler   0x00000000bfc00380       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
 
 .dbg_excpt      0x00000000bfc00480        0x0
                 0x00000000bfc00480                . = (. + DEFINED (_DEBUGGER)?0x8:0x0)
@@ -2202,7 +2202,7 @@ END GROUP
 
 .app_excpt      0x000000009fc01180       0x10
  *(.gen_handler)
- .gen_handler   0x000000009fc01180       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+ .gen_handler   0x000000009fc01180       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
 
 .vector_0       0x000000009fc01200        0x8
  *(.vector_0)
@@ -3654,11 +3654,11 @@ END GROUP
  .gnu.attributes
                 0x00000000000001e0       0x10 build/default/production/_ext/1360937237/rf_transmitter.o
  .gnu.attributes
-                0x00000000000001f0       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+                0x00000000000001f0       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
  .gnu.attributes
-                0x0000000000000200       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
+                0x0000000000000200       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
  .gnu.attributes
-                0x0000000000000210       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
+                0x0000000000000210       0x10 C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
  .gnu.attributes
                 0x0000000000000220       0x10 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\pic32_software_reset.o
  .gnu.attributes
@@ -3840,9 +3840,9 @@ END GROUP
  .gnu.attributes
                 0x00000000000007b0       0x10 c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\libpic32.a(pic32_data_init_copy.o)
                 0x0000000000000200                _min_heap_size = 0x200
-LOAD C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
-LOAD C:\Users\Mtlantla\AppData\Local\Temp\ccd4Q3Mj.o
-LOAD C:\Users\Mtlantla\AppData\Local\Temp\ccCoLun8.o
+LOAD C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
+LOAD C:\Users\Mtlantla\AppData\Local\Temp\ccbznf4W.o
+LOAD C:\Users\Mtlantla\AppData\Local\Temp\ccG2aweX.o
 LOAD c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1/../../../../pic32mx/lib\pic32_software_reset.o
 LOAD c:/program files/microchip/xc32/v4.45/bin/bin/../../lib/gcc/pic32mx/8.3.1\libgcc.a
 START GROUP
@@ -4301,7 +4301,7 @@ __xc_reference_data
 .text.main_entry
                 0x000000009d0042d4       0x54
  .text.main_entry
-                0x000000009d0042d4       0x54 C:\Users\Mtlantla\AppData\Local\Temp\ccky8B3J.o
+                0x000000009d0042d4       0x54 C:\Users\Mtlantla\AppData\Local\Temp\ccQeEPqa.o
                 0x000000009d004308                __crt0_exit
 
 .text.CAN_InitializeIDs
