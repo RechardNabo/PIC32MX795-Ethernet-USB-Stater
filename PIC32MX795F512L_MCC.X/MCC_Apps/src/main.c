@@ -132,34 +132,64 @@ int main ( void ){
                 }
                 CORETIMER_DelayMs(DELAY/2);
                 
-                // Then send dummy temperature data
+                // Send temperature/humidity data (8 bytes as expected by RPi)
                 memset(canMsg, 0, sizeof(canMsg));
-                canMsg[0] = 25; // Example temperature value (25°C)
-                canMsg[1] = 0;  // Temperature decimal part
-                if(!CAN_ProcessMessage(temperatureID, canMsg, 2)) {
+                // Temperature: 25.5°C as float (4 bytes) + Humidity: 60.0% as float (4 bytes)
+                float temperature = 25.5f;
+                float humidity = 60.0f;
+                memcpy(&canMsg[0], &temperature, 4);  // Temperature (bytes 0-3)
+                memcpy(&canMsg[4], &humidity, 4);     // Humidity (bytes 4-7)
+                if(!CAN_ProcessMessage(temperatureID, canMsg, 8)) {
                     LED2_On();
                 }
                 CORETIMER_DelayMs(DELAY/2);
                 
-                // Send dummy voltage data
+                // Send voltage data (8 bytes - 3 voltage readings)
                 memset(canMsg, 0, sizeof(canMsg));
-                // Pack a 3.3V value: 3.3 * 1000 = 3300 (to preserve 3 decimal places)
-                canMsg[0] = (3300 & 0xFF);       // LSB
-                canMsg[1] = (3300 >> 8) & 0xFF;  // MSB
-                if(!CAN_ProcessMessage(voltageID, canMsg, 2)) {
+                // Pack voltage values as 16-bit integers (mV): R1=3300mV, R2=1650mV, R3=5000mV
+                uint16_t voltage_r1 = 3300;  // 3.3V in mV
+                uint16_t voltage_r2 = 1650;  // 1.65V in mV  
+                uint16_t voltage_r3 = 5000;  // 5.0V in mV
+                canMsg[0] = voltage_r1 & 0xFF;        // R1 LSB
+                canMsg[1] = (voltage_r1 >> 8) & 0xFF; // R1 MSB
+                canMsg[2] = voltage_r2 & 0xFF;        // R2 LSB
+                canMsg[3] = (voltage_r2 >> 8) & 0xFF; // R2 MSB
+                canMsg[4] = voltage_r3 & 0xFF;        // R3 LSB
+                canMsg[5] = (voltage_r3 >> 8) & 0xFF; // R3 MSB
+                canMsg[6] = 0x00;  // Reserved
+                canMsg[7] = 0x00;  // Reserved
+                if(!CAN_ProcessMessage(voltageID, canMsg, 8)) {
                     LED2_On();
                 }
                 CORETIMER_DelayMs(DELAY/2);
                 
-                // Send dummy current data
+                // Send current data (4 bytes minimum as expected by RPi)
                 memset(canMsg, 0, sizeof(canMsg));
-                // Pack a 100mA value: 0.1 * 1000 = 100 (to preserve 3 decimal places)
-                canMsg[0] = (100 & 0xFF);        // LSB
-                canMsg[1] = (100 >> 8) & 0xFF;   // MSB
-                if(!CAN_ProcessMessage(currentID, canMsg, 2)) {
+                // Pack current as float (4 bytes): 0.1A = 100mA
+                float current = 0.1f;  // 100mA
+                memcpy(&canMsg[0], &current, 4);  // Current (bytes 0-3)
+                canMsg[4] = 0x00;  // Reserved
+                canMsg[5] = 0x00;  // Reserved
+                canMsg[6] = 0x00;  // Reserved
+                canMsg[7] = 0x00;  // Reserved
+                if(!CAN_ProcessMessage(currentID, canMsg, 8)) {
                     LED2_On();
                 }
-                state = UART;
+                CORETIMER_DelayMs(DELAY/2);
+                
+                // Send power data (8 bytes - 3 power readings)
+                memset(canMsg, 0, sizeof(canMsg));
+                // Pack power values as floats: P = V * I
+                float power_r1 = 0.33f;  // 3.3V * 0.1A = 0.33W
+                float power_r2 = 0.165f; // 1.65V * 0.1A = 0.165W
+                memcpy(&canMsg[0], &power_r1, 4);  // Power R1 (bytes 0-3)
+                memcpy(&canMsg[4], &power_r2, 4);  // Power R2 (bytes 4-7)
+                if(!CAN_ProcessMessage(powerID, canMsg, 8)) {
+                    LED2_On();
+                }
+                
+                // Transition to sensor reading states for actual sensor data
+                state = READ_MIC;
                 LED3_Off();
                 CORETIMER_DelayMs(DELAY);
             break;
@@ -221,11 +251,18 @@ int main ( void ){
                 while(!AD1CON1bits.DONE);              // Wait for conversion to complete
                 uint16_t micValue = ADC1BUF0 & 0x0FFF; // 12-bit result from buffer 0
                 
-                // Send microphone data via CAN
-                uint8_t micData[2];
+                // Send microphone data via CAN (8 bytes)
+                uint8_t micData[8] = {0};
                 micData[0] = micValue & 0xFF;         // LSB
                 micData[1] = (micValue >> 8) & 0xFF;  // MSB
-                if(!CAN_ProcessMessage(microphoneID, micData, 2)) {
+                // Add timestamp or additional sensor info in remaining bytes
+                micData[2] = 0x4D; // 'M' for Microphone identifier
+                micData[3] = 0x49; // 'I'
+                micData[4] = 0x43; // 'C'
+                micData[5] = 0x00; // Reserved
+                micData[6] = 0x00; // Reserved
+                micData[7] = 0x00; // Reserved
+                if(!CAN_ProcessMessage(microphoneID, micData, 8)) {
                     LED2_On();  // Indicate error if send fails
                 }
                 
@@ -244,14 +281,14 @@ int main ( void ){
                 uint16_t tempRaw = ADC1BUF0 & 0x0FFF;  // 12-bit result from buffer 0
                 
                 // Convert raw ADC to temperature (example conversion, adjust as needed)
-                // Scale to 0.1°C units for better resolution (e.g., 25.5°C = 255)
-                uint16_t tempScaled = (uint16_t)(((tempRaw * 3.3 / 4096.0 - 0.5) * 100.0) * 10);
+                float temperature = (tempRaw * 3.3f / 4096.0f - 0.5f) * 100.0f;
+                float humidity = 50.0f + (tempRaw % 100) * 0.5f; // Simulated humidity based on temp reading
                 
-                // Send temperature data via CAN
-                uint8_t tempData[2];
-                tempData[0] = tempScaled & 0xFF;         // LSB
-                tempData[1] = (tempScaled >> 8) & 0xFF;  // MSB
-                if(!CAN_ProcessMessage(temperatureID, tempData, 2)) {
+                // Send temperature/humidity data via CAN (8 bytes as expected by RPi)
+                uint8_t tempData[8] = {0};
+                memcpy(&tempData[0], &temperature, 4);  // Temperature (bytes 0-3)
+                memcpy(&tempData[4], &humidity, 4);     // Humidity (bytes 4-7)
+                if(!CAN_ProcessMessage(temperatureID, tempData, 8)) {
                     LED2_On();  // Indicate error if send fails
                 }
                 
@@ -266,9 +303,17 @@ int main ( void ){
                 // Read vibration sensor 1 (digital input)
                 uint8_t vib1State = VIBRATION_1_PORT;
                 
-                // Send vibration 1 state via CAN
-                uint8_t vib1Data[1] = {vib1State ? 0x01 : 0x00};
-                if(!CAN_ProcessMessage(vibrationIDs.vibration1ID, vib1Data, 1)) {
+                // Send vibration 1 state via CAN (8 bytes for consistency)
+                uint8_t vib1Data[8] = {0};
+                vib1Data[0] = vib1State ? 0x01 : 0x00;
+                vib1Data[1] = 0x56; // 'V' for Vibration identifier
+                vib1Data[2] = 0x49; // 'I'
+                vib1Data[3] = 0x42; // 'B'
+                vib1Data[4] = 0x31; // '1' for sensor 1
+                vib1Data[5] = 0x00; // Reserved
+                vib1Data[6] = 0x00; // Reserved
+                vib1Data[7] = 0x00; // Reserved
+                if(!CAN_ProcessMessage(vibrationIDs.vibration1ID, vib1Data, 8)) {
                     LED2_On();  // Indicate error if send fails
                 }
                 
@@ -283,14 +328,22 @@ int main ( void ){
                 // Read vibration sensor 2 (digital input)
                 uint8_t vib2State = VIBRATION_2_PORT;
                 
-                // Send vibration 2 state via CAN
-                uint8_t vib2Data[1] = {vib2State ? 0x01 : 0x00};
-                if(!CAN_ProcessMessage(vibrationIDs.vibration2ID, vib2Data, 1)) {
+                // Send vibration 2 state via CAN (8 bytes for consistency)
+                uint8_t vib2Data[8] = {0};
+                vib2Data[0] = vib2State ? 0x01 : 0x00;
+                vib2Data[1] = 0x56; // 'V' for Vibration identifier
+                vib2Data[2] = 0x49; // 'I'
+                vib2Data[3] = 0x42; // 'B'
+                vib2Data[4] = 0x32; // '2' for sensor 2
+                vib2Data[5] = 0x00; // Reserved
+                vib2Data[6] = 0x00; // Reserved
+                vib2Data[7] = 0x00; // Reserved
+                if(!CAN_ProcessMessage(vibrationIDs.vibration2ID, vib2Data, 8)) {
                     LED2_On();  // Indicate error if send fails
                 }
                 
                 LED3_Off();
-                state = CAN;  // Return to main state machine
+                state = CAN;  // Return to main CAN state for continuous operation
                 CORETIMER_DelayMs(DELAY/2);
                 break;
             }
