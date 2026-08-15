@@ -926,6 +926,45 @@ released → pressed) trigger actions — holding the button does not repeat.
 | `vTaskDelay()` | FreeRTOS (TMR1) | Yes (yields) | Yes | 1ms |
 | `xTaskDelayUntil()` | FreeRTOS (TMR1) | Yes (yields) | Yes | 1ms |
 
+### USB CDC Console (Project 3)
+
+A USB CDC virtual serial port console is implemented as an independent module
+in `src/console.c` and `src/console.h`. It does NOT depend on the LED or switch
+code — it can be used on its own or alongside other features.
+
+**Hardware:** Connect a USB cable from **J5** (micro-AB USB Device port) to a PC.
+The board enumerates as a CDC virtual COM port. Open a terminal program (TeraTerm,
+PuTTY, etc.) on the COM port at any baud rate (CDC ignores baud — it's USB).
+
+**Console API:**
+
+| Function | Description |
+|----------|-------------|
+| `Console_Initialize()` | Open USB device, register event handlers |
+| `Console_Tasks()` | State machine — call from main loop |
+| `Console_IsConnected()` | True when USB host has configured the device |
+| `Console_Print(str)` | Send a string to the host |
+| `Console_Println(str)` | Send a string + CRLF |
+| `Console_Read(buf, size)` | Non-blocking read of received bytes |
+| `Console_HasData()` | True if RX buffer has data |
+| `Console_GetChar()` | Get one byte (-1 if no data) |
+
+**Console State Machine:**
+
+```
+INIT → OPEN_DEVICE → WAIT_CONFIG → READY
+                                    ↓ (host disconnects)
+                              WAIT_CONFIG
+```
+
+The console uses ring buffers (256-byte TX, 128-byte RX) and non-blocking USB
+CDC transfers. The main loop calls `Console_Tasks()` every 10ms alongside the
+LED/switch code. When connected, switch presses are reported to the console and
+characters typed in the terminal are echoed back.
+
+**USB Descriptors:** VID=0x04D8 (Microchip), PID=0x0000, CDC ACM class, full-speed.
+Defined in `src/config/default/usb_device_init_data.c`.
+
 ### NET_PRES Layer
 
 The Network Presentation (NET_PRES) layer requires two configuration constants in

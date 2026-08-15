@@ -26,6 +26,7 @@
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
+#include "console.h"                    // USB CDC console (Project 3)
 
 /* --------------------------------------------------------------------------
    LED Timer (TMR3) — Polling Mode
@@ -247,13 +248,58 @@ int main ( void )
     /* Initialize switch debouncing state */
     Switches_Initialize();
 
+    /* Initialize USB CDC console (Project 3 — independent of LEDs/switches) */
+    Console_Initialize();
+
     uint32_t speedMs   = g_speedTable[g_speedIndex];
     uint8_t  step      = 0;
     uint32_t timeAccum = 0;
 
-    /* Main loop: debounce switches every 10ms, update LED pattern at speedMs */
+    /* Track console connection state for welcome message */
+    bool wasConnected  = false;
+
+    /* Main loop: debounce switches every 10ms, update LED pattern at speedMs,
+       and service the USB CDC console state machine. */
     while ( true )
     {
+        /* --- USB CDC Console (independent module) --- */
+        Console_Tasks();
+
+        /* Print welcome message when host first connects */
+        if (Console_IsConnected() && !wasConnected)
+        {
+            wasConnected = true;
+            Console_Println("");
+            Console_Println("============================================");
+            Console_Println("  PIC32 Ethernet Starter Kit - USB CDC Console");
+            Console_Println("============================================");
+            Console_Println("");
+            Console_Println("Console is ready. Type characters to echo.");
+            Console_Println("");
+        }
+        if (!Console_IsConnected())
+        {
+            wasConnected = false;
+        }
+
+        /* Echo received characters back to the host */
+        if (Console_HasData())
+        {
+            char rxChar;
+            while (Console_Read(&rxChar, 1) > 0)
+            {
+                /* Echo the character back */
+                char echoBuf[2] = { rxChar, '\0' };
+                Console_Print(echoBuf);
+
+                /* Handle special keys */
+                if (rxChar == '\r')
+                {
+                    Console_Print("\n");
+                }
+            }
+        }
+
         /* --- Switch debouncing (polled every DEBOUNCE_SAMPLE_MS) --- */
         if (Switch_Debounce(0, SWITCH1_Get()))
         {
@@ -261,6 +307,19 @@ int main ( void )
             g_ledMode = (LedMode)((g_ledMode + 1) % LED_MODE_COUNT);
             g_allLedsOn = false;  /* Clear override when changing mode */
             step = 0;
+
+            /* Report to console if connected */
+            if (Console_IsConnected())
+            {
+                Console_Print("LED mode changed: ");
+                switch (g_ledMode)
+                {
+                    case LED_MODE_RUNNING:  Console_Println("Running"); break;
+                    case LED_MODE_ALTERNATE: Console_Println("Alternate"); break;
+                    case LED_MODE_ALL_BLINK: Console_Println("All Blink"); break;
+                    default: break;
+                }
+            }
         }
 
         if (Switch_Debounce(1, SWITCH2_Get()))
@@ -269,6 +328,36 @@ int main ( void )
             g_speedIndex = (g_speedIndex + 1) % SPEED_COUNT;
             speedMs = g_speedTable[g_speedIndex];
             timeAccum = 0;
+
+            if (Console_IsConnected())
+            {
+                Console_Print("Speed changed: ");
+                char numBuf[16];
+                /* Simple integer to string */
+                uint32_t val = speedMs;
+                int idx = 0;
+                if (val == 0)
+                {
+                    numBuf[idx++] = '0';
+                }
+                else
+                {
+                    char tmp[16];
+                    int tmpIdx = 0;
+                    while (val > 0 && tmpIdx < 15)
+                    {
+                        tmp[tmpIdx++] = '0' + (val % 10);
+                        val /= 10;
+                    }
+                    while (tmpIdx > 0)
+                    {
+                        numBuf[idx++] = tmp[--tmpIdx];
+                    }
+                }
+                numBuf[idx] = '\0';
+                Console_Print(numBuf);
+                Console_Println("ms");
+            }
         }
 
         if (Switch_Debounce(2, SWITCH3_Get()))
@@ -282,6 +371,11 @@ int main ( void )
             else
             {
                 LEDs_AllOff();
+            }
+
+            if (Console_IsConnected())
+            {
+                Console_Println(g_allLedsOn ? "All LEDs ON" : "All LEDs OFF");
             }
         }
 
