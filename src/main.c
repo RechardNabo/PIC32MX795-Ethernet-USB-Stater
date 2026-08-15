@@ -73,6 +73,154 @@ static void TMR3_Initialize_LED(void)
     TMR3_Start();
 }
 
+/* --------------------------------------------------------------------------
+   Switch Debouncing
+   --------------------------------------------------------------------------
+   The 3 user switches (SW1=RD6, SW2=RD7, SW3=RD13) are active-low.
+   BSP provides: SWITCH1_Get(), SWITCH2_Get(), SWITCH3_Get()
+     0 = pressed, 1 = released
+
+   Debounce approach: sample every 10ms, require DEBOUNCE_COUNT consecutive
+   readings matching the new state before accepting the press/release.
+   This filters out mechanical bounce noise (typically 5-20ms).
+   -------------------------------------------------------------------------- */
+#define DEBOUNCE_SAMPLE_MS          10U     /* Sample switches every 10ms   */
+#define DEBOUNCE_COUNT              3U      /* 3 consecutive reads = 30ms   */
+
+typedef struct
+{
+    uint8_t  pin;            /* Current raw pin reading (0 or 1)            */
+    uint8_t  stableState;    /* Last debounced state                        */
+    uint8_t  counter;        /* Consecutive matching readings               */
+} SwitchState;
+
+static SwitchState g_switches[3];
+
+static void Switches_Initialize(void)
+{
+    g_switches[0].stableState = SWITCH1_Get();
+    g_switches[1].stableState = SWITCH2_Get();
+    g_switches[2].stableState = SWITCH3_Get();
+
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        g_switches[i].pin     = g_switches[i].stableState;
+        g_switches[i].counter = 0;
+    }
+}
+
+/* Returns true if a new press was detected (falling edge: released→pressed).
+   Updates the stable state for the given switch index (0=SW1, 1=SW2, 2=SW3). */
+static bool Switch_Debounce(uint8_t index, uint8_t rawReading)
+{
+    SwitchState *sw = &g_switches[index];
+
+    if (rawReading == sw->pin)
+    {
+        /* Same reading as last sample — increment counter */
+        if (sw->counter < DEBOUNCE_COUNT)
+        {
+            sw->counter++;
+        }
+    }
+    else
+    {
+        /* Different reading — reset and start new count */
+        sw->pin     = rawReading;
+        sw->counter = 1;
+    }
+
+    /* If we've accumulated enough consecutive readings, accept the new state */
+    if (sw->counter >= DEBOUNCE_COUNT && sw->pin != sw->stableState)
+    {
+        uint8_t oldState   = sw->stableState;
+        sw->stableState    = sw->pin;
+
+        /* Return true only on press (falling edge: released→pressed) */
+        return (oldState == SWITCH1_STATE_RELEASED &&
+                sw->stableState == SWITCH1_STATE_PRESSED);
+    }
+
+    return false;
+}
+
+/* --------------------------------------------------------------------------
+   LED Modes
+   --------------------------------------------------------------------------
+   SW1 cycles through 4 LED display modes.
+   SW2 cycles through 4 speed settings.
+   SW3 toggles all LEDs on/off (override).
+   -------------------------------------------------------------------------- */
+typedef enum
+{
+    LED_MODE_RUNNING,       /* One LED at a time, left to right             */
+    LED_MODE_ALTERNATE,     /* LED1+LED3 alternate with LED2               */
+    LED_MODE_ALL_BLINK,     /* All 3 LEDs blink together                   */
+    LED_MODE_COUNT          /* Number of modes                             */
+} LedMode;
+
+#define SPEED_COUNT                4U
+static const uint32_t g_speedTable[SPEED_COUNT] = { 200U, 100U, 50U, 25U };
+
+static LedMode   g_ledMode    = LED_MODE_RUNNING;
+static uint8_t   g_speedIndex = 1;       /* Default: 100ms                 */
+static bool      g_allLedsOn  = false;   /* SW3 override: all on          */
+
+static void LEDs_AllOff(void)
+{
+    LED1_Off();
+    LED2_Off();
+    LED3_Off();
+}
+
+static void LEDs_AllOn(void)
+{
+    LED1_On();
+    LED2_On();
+    LED3_On();
+}
+
+/* Display the running LED pattern at the given step (0, 1, or 2) */
+static void LEDs_RunningPattern(uint8_t step)
+{
+    LEDs_AllOff();
+    switch (step % 3)
+    {
+        case 0: LED1_On(); break;
+        case 1: LED2_On(); break;
+        case 2: LED3_On(); break;
+        default: break;
+    }
+}
+
+/* Display the alternate pattern at the given step (0 or 1) */
+static void LEDs_AlternatePattern(uint8_t step)
+{
+    LEDs_AllOff();
+    if (step % 2 == 0)
+    {
+        LED1_On();
+        LED3_On();
+    }
+    else
+    {
+        LED2_On();
+    }
+}
+
+/* Display the all-blink pattern at the given step (0 or 1) */
+static void LEDs_AllBlinkPattern(uint8_t step)
+{
+    if (step % 2 == 0)
+    {
+        LEDs_AllOn();
+    }
+    else
+    {
+        LEDs_AllOff();
+    }
+}
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -96,18 +244,79 @@ int main ( void )
     /* Configure TMR3 for LED timing (500us period, poll flag for 1ms) */
     TMR3_Initialize_LED();
 
-    /* Running LED sequence: only one LED on at a time.
-       Uses TMR3 polling (no ISR, no FreeRTOS scheduler needed). */
+    /* Initialize switch debouncing state */
+    Switches_Initialize();
+
+    uint32_t speedMs   = g_speedTable[g_speedIndex];
+    uint8_t  step      = 0;
+    uint32_t timeAccum = 0;
+
+    /* Main loop: debounce switches every 10ms, update LED pattern at speedMs */
     while ( true )
     {
-        LED1_On();  LED2_Off(); LED3_Off();
-        TMR3_DelayMs(100);
+        /* --- Switch debouncing (polled every DEBOUNCE_SAMPLE_MS) --- */
+        if (Switch_Debounce(0, SWITCH1_Get()))
+        {
+            /* SW1 pressed: cycle to next LED mode */
+            g_ledMode = (LedMode)((g_ledMode + 1) % LED_MODE_COUNT);
+            g_allLedsOn = false;  /* Clear override when changing mode */
+            step = 0;
+        }
 
-        LED1_Off(); LED2_On();  LED3_Off();
-        TMR3_DelayMs(100);
+        if (Switch_Debounce(1, SWITCH2_Get()))
+        {
+            /* SW2 pressed: cycle to next speed */
+            g_speedIndex = (g_speedIndex + 1) % SPEED_COUNT;
+            speedMs = g_speedTable[g_speedIndex];
+            timeAccum = 0;
+        }
 
-        LED1_Off(); LED2_Off(); LED3_On();
-        TMR3_DelayMs(100);
+        if (Switch_Debounce(2, SWITCH3_Get()))
+        {
+            /* SW3 pressed: toggle all-LEDs-on override */
+            g_allLedsOn = !g_allLedsOn;
+            if (g_allLedsOn)
+            {
+                LEDs_AllOn();
+            }
+            else
+            {
+                LEDs_AllOff();
+            }
+        }
+
+        /* --- LED pattern update (every speedMs) --- */
+        if (timeAccum >= speedMs)
+        {
+            timeAccum = 0;
+
+            if (!g_allLedsOn)
+            {
+                switch (g_ledMode)
+                {
+                    case LED_MODE_RUNNING:
+                        LEDs_RunningPattern(step);
+                        break;
+
+                    case LED_MODE_ALTERNATE:
+                        LEDs_AlternatePattern(step);
+                        break;
+
+                    case LED_MODE_ALL_BLINK:
+                        LEDs_AllBlinkPattern(step);
+                        break;
+
+                    default:
+                        LEDs_AllOff();
+                        break;
+                }
+                step++;
+            }
+        }
+
+        /* Wait one debounce sample period, then accumulate */
+        TMR3_DelayMs(DEBOUNCE_SAMPLE_MS);
+        timeAccum += DEBOUNCE_SAMPLE_MS;
     }
 
     /* Execution should not come here during normal operation */

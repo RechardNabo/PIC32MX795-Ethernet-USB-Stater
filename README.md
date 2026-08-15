@@ -871,17 +871,51 @@ scheduler to be running. Since `main()` runs a bare-metal loop without calling
 
 ### LED Implementation
 
-The running LED sequence (LED1 → LED2 → LED3, 100ms each) uses TMR3 in polling mode:
+The LED display uses TMR3 in polling mode for timing:
 
 1. `TMR3_Initialize_LED()` computes the period register from `TMR3_FrequencyGet()` at
    runtime (no hardcoded clock values), sets a 500µs period, disables the interrupt, and
    starts the timer.
 2. `TMR3_DelayMs()` polls the TMR3 interrupt flag. Two 500µs periods = 1ms.
-3. The main loop cycles through the three LEDs with `TMR3_DelayMs(100)`.
+3. The main loop debounces switches every 10ms and updates the LED pattern at the
+   selected speed interval.
 
 **Why 500µs and not 1ms?** TMR3 is 16-bit with a 1:1 prescaler at 80MHz. A 1ms period
 would need PR=79999, which exceeds the 65535 maximum. So we use 500µs (PR=39999) and
 count 2 periods per millisecond.
+
+### Switch-Controlled LEDs (Project 2)
+
+Three user switches control the LED display behavior:
+
+| Switch | Pin | Function |
+|--------|-----|----------|
+| SW1 | RD6 | Cycle LED mode (4 modes) |
+| SW2 | RD7 | Cycle speed (4 settings) |
+| SW3 | RD13 | Toggle all LEDs on/off override |
+
+**LED Modes (SW1):**
+
+| Mode | Description |
+|------|-------------|
+| Running | One LED at a time: LED1 → LED2 → LED3 → repeat |
+| Alternate | LED1+LED3 alternate with LED2 |
+| All Blink | All 3 LEDs blink together |
+| (cycles back to Running) | |
+
+**Speed Settings (SW2):**
+
+| Index | Delay per step |
+|-------|----------------|
+| 0 | 200ms (slow) |
+| 1 | 100ms (default) |
+| 2 | 50ms (fast) |
+| 3 | 25ms (very fast) |
+
+**Debouncing:** Switches are sampled every 10ms. A reading must remain stable for 3
+consecutive samples (30ms total) before the state change is accepted. This filters
+out mechanical contact bounce (typically 5-20ms). Only press events (falling edge:
+released → pressed) trigger actions — holding the button does not repeat.
 
 ### Timing Options Available
 
