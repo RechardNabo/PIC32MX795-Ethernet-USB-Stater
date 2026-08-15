@@ -160,10 +160,10 @@ typedef enum
 } LedMode;
 
 #define SPEED_COUNT                4U
-static const uint32_t g_speedTable[SPEED_COUNT] = { 200U, 100U, 50U, 25U };
+static const uint32_t g_speedTable[SPEED_COUNT] = { 400U, 200U, 100U, 50U };
 
 static LedMode   g_ledMode    = LED_MODE_RUNNING;
-static uint8_t   g_speedIndex = 1;       /* Default: 100ms                 */
+static uint8_t   g_speedIndex = 2;       /* Default: 100ms                 */
 static bool      g_allLedsOn  = false;   /* SW3 override: all on          */
 
 static void LEDs_AllOff(void)

@@ -907,10 +907,10 @@ Three user switches control the LED display behavior:
 
 | Index | Delay per step |
 |-------|----------------|
-| 0 | 200ms (slow) |
-| 1 | 100ms (default) |
-| 2 | 50ms (fast) |
-| 3 | 25ms (very fast) |
+| 0 | 400ms (very slow) |
+| 1 | 200ms (slow) |
+| 2 | 100ms (normal) |
+| 3 | 50ms (fast) |
 
 **Debouncing:** Switches are sampled every 10ms. A reading must remain stable for 3
 consecutive samples (30ms total) before the state change is accepted. This filters
