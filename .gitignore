@@ -1,0 +1,26 @@
+# TCP/IP Stack files (large, vendored from Microchip MLA)
+TCP_IP_Files/
+
+# MPLAB X build artifacts (nested in any subdirectory)
+**/build/
+**/dist/
+**/nbproject/private/
+**/.generated_files/
+*.o
+*.o.d
+*.elf
+*.hex
+*.map
+*.cof
+*.sym
+*.lst
+*.memoryfile.xml
+
+# IDE settings
+.vscode/
+*.swp
+*~
+
+# Backups
+**/src_backup_*/
+**/*.bak

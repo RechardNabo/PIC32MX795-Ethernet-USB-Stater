@@ -1,0 +1,150 @@
+/*******************************************************************************
+  System Configuration
+
+  File Name:
+    configuration.h
+
+  Summary:
+    Project system configuration header.
+
+  Description:
+    This file contains the system-wide configuration defines for the
+    PIC32MX795F512L Ethernet + USB Starter Kit project.
+    Manually written because MCC code generation failed due to internal
+    MCC GUI bugs (USB CDC Python error, EVIC null symbols, broken crypto
+    auto-connect).
+ *******************************************************************************/
+
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Driver Module Index Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+/* MIIM Driver Index */
+#define DRV_MIIM_INDEX_0              0
+
+/* Ethernet PHY Driver Index */
+#define DRV_ETHPHY_INDEX_0            0
+
+/* Ethernet MAC Driver Index (TCPIP_MODULE_MAC_PIC32INT) */
+#define DRV_ETHMAC_INDEX_0            0
+
+/* USB FS Driver Index */
+#define DRV_USBFS_INDEX_0             0
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: System Service Module Index Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+/* System Time Service Index */
+#define SYS_TIME_INDEX_0              0
+
+/* System Console Service Index */
+#define SYS_CONSOLE_INDEX_0           0
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Middleware / Stack Module Index Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+/* TCP/IP Stack Index */
+#define TCPIP_STACK_INDEX_0           0
+
+/* Net Presentation Layer Index */
+#define NET_PRES_INDEX_0              0
+
+/* USB Device Layer Index */
+#define USB_DEVICE_INDEX_0            0
+
+/* USB Device CDC Function Driver Index */
+#define USB_DEVICE_CDC_INDEX_0        0
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: USB Device Configuration
+// *****************************************************************************
+// *****************************************************************************
+
+/* Number of endpoints used by the USB device (EP0 + CDC bulk IN + CDC bulk OUT
+   + CDC interrupt IN = 4 endpoints, but PIC32MX supports EP0..EP15.
+   We need 2 for control + 2 for CDC bulk + 1 for CDC interrupt = 5) */
+#define USB_DEVICE_ENDPOINTS_NUMBER   5
+
+/* Endpoint table size: 32 bytes per endpoint, aligned to 512 bytes */
+#define USB_DEVICE_ENDPOINT_TABLE_SIZE  (32 * USB_DEVICE_ENDPOINTS_NUMBER)
+
+/* USB Device queue sizes */
+#define USB_DEVICE_CDC_QUEUE_DEPTH_READ              1
+#define USB_DEVICE_CDC_QUEUE_DEPTH_WRITE             1
+#define USB_DEVICE_CDC_QUEUE_DEPTH_SERIAL_STATE      1
+#define USB_DEVICE_ENDPOINT_READ_QUEUE_SIZE          1
+#define USB_DEVICE_ENDPOINT_WRITE_QUEUE_SIZE         1
+
+/* Number of function drivers registered */
+#define USB_DEVICE_FUNCTION_REGISTRATION_COUNT      1
+
+/* Number of configurations */
+#define USB_DEVICE_NUM_CONFIGURATIONS               1
+
+/* Number of string descriptors */
+#define USB_DEVICE_NUM_STRING_DESCRIPTORS           4
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: TCP/IP Stack Configuration
+// *****************************************************************************
+// *****************************************************************************
+
+/* TCP/IP Stack heap configuration */
+#define TCPIP_STACK_HEAP_SIZE         45120
+#define TCPIP_STACK_HEAP_POOL_SIZE    0
+#define TCPIP_STACK_HEAP_POOL Buckets_0_Size
+
+/* TCP/IP Stack TCP socket configuration */
+#define TCPIP_TCP_MAX_SOCKETS         4
+#define TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE  512
+#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE  512
+
+/* TCP/IP Stack UDP socket configuration */
+#define TCPIP_UDP_MAX_SOCKETS         4
+
+/* ARP configuration */
+#define TCPIP_ARP_CACHE_ENTRIES       5
+#define TCPIP_ARP_CACHE_SOLVE_TIMEOUT 10
+
+/* DHCP Client configuration */
+#define TCPIP_DHCP_TIMEOUT            (60 * 60)
+
+/* DNS Client configuration */
+#define TCPIP_DNS_CLIENT_CACHE_ENTRIES  5
+
+/* ICMP configuration */
+#define TCPIP_ICMP_ECHO_REQUEST_RATE   1000
+
+/* Network interface configuration */
+#define TCPIP_STACK_NETWORK_INTERFACES  1
+
+/* Ethernet MAC RX/TX descriptor counts */
+#define DRV_ETHMAC_RX_DESCRIPTORS       8
+#define DRV_ETHMAC_TX_DESCRIPTORS       4
+#define DRV_ETHMAC_RX_BUFF_SIZE         1536
+#define DRV_ETHMAC_RX_DEDICATED_BUFFERS 4
+#define DRV_ETHMAC_RX_INIT_BUFFERS      0
+#define DRV_ETHMAC_RX_LOW_THRESHOLD     2
+#define DRV_ETHMAC_RX_LOW_FILL          0
+#define DRV_ETHMAC_LINK_INIT_DELAY      1000
+
+/* PHY address on the PIC32MX795 Ethernet Starter Kit (SMSC LAN8720A = 0 or 1) */
+#define DRV_ETHPHY_PHY_ADDRESS         0
+
+#endif /* CONFIGURATION_H */
+/*******************************************************************************
+ End of File
+*/

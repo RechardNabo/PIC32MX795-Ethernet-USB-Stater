@@ -596,9 +596,352 @@ current-limited switch.
 
 ---
 
-*DS61166A-page 22–26 — © 2010 Microchip Technology Inc.*
 
-> **Transcription note:** These pages consist almost entirely of schematic drawings. The tables
-> above reconstruct the nets, reference designators and component values as printed on the
-> schematic sheets. Some pin labels are rendered from low-resolution artwork and should be
-> verified against the original Microchip document **DS61166A** before use in a design.
+## FIGURE A-9: PIC32 ETHERNET STARTER KIT (APPLICATION BOARD CONNECTOR)
+
+> *© 2010 Microchip Technology Inc. — DS61166A-page 27 — Board Layout and Schematics*
+
+### Sheet Overview
+
+This sheet documents  **J2** , the 132-pin application board expansion connector. Every peripheral
+signal from the **PIC32MX795F512L** (U2) is routed to this connector, along with the board power
+rails ( **P32_VDD** ,  **+5V_EXT** ) and multiple ground returns.
+
+| Item        | Detail                                                           |
+| ----------- | ---------------------------------------------------------------- |
+| Reference   | **J2**                                                     |
+| Type        | Application/expansion board connector                            |
+| Pin count   | 132 (odd pins on the left column, even pins on the right column) |
+| Power pins  | Pin 1 =**P32_VDD** , Pin 2 = **+5V_EXT**             |
+| Ground pins | 11/12, 33/34, 55/56, 77/78, 99/100, 121/122                      |
+
+---
+
+### Functional Signal Groups Brought Out to J2
+
+| Group Label (as printed) | Description                                   |
+| ------------------------ | --------------------------------------------- |
+| TRACE PORT               | EJTAG instruction trace (TRCLK, TRD0–TRD3)   |
+| PMP DATA [7:0]           | Parallel Master Port low data byte            |
+| PMP DATA [15:8]          | Parallel Master Port high data byte           |
+| PMP CONTROL              | PMP read/write/chip-select strobes            |
+| PMP ADDRESS              | Parallel Master Port address lines            |
+| SECONDARY OSC            | Secondary oscillator (SOSCI/SOSCO)            |
+| (5) TIMERS               | Timer external clock inputs T2CLK–T5CLK      |
+| (2) OC-PWM / OC          | Output Compare / PWM channels OC1–OC5        |
+| INPUT CAPTURE            | Input Capture channels IC2, IC3               |
+| SPI1                     | Serial Peripheral Interface 1                 |
+| SPI2                     | Serial Peripheral Interface 2                 |
+| I2C1                     | Inter-Integrated Circuit port 1               |
+| I2C2                     | Inter-Integrated Circuit port 2               |
+| UART1                    | Universal Asynchronous Receiver/Transmitter 1 |
+| UART2                    | Universal Asynchronous Receiver/Transmitter 2 |
+| DEBUG SMBUS              | Debugger SMBus (DBG_SMSDA / DBG_SMSCL)        |
+| COMPARATOR 1             | Analog comparator 1 inputs/output             |
+| COMPARATOR 2             | Analog comparator 2 inputs/output             |
+| COMPARATOR REF           | Comparator voltage reference (CVREF)          |
+| (8CH) A/D                | 8-channel analog-to-digital converter inputs  |
+| A/D REF                  | A/D voltage references (VREF+ / VREF–)       |
+| (5) EXT_INT              | External interrupt inputs INT0–INT4          |
+| JTAG/ICSP                | TCK, TMS, TDI, TDO                            |
+| ICSP                     | PIC32_PGC2, PIC32_PGD2, PIC32_MCLR            |
+
+---
+
+### J2 Pinout — Odd Pins (Left Column)
+
+| Pin | Signal                    | Group               |
+| --- | ------------------------- | ------------------- |
+| 1   | **P32_VDD**         | Power               |
+| 3   | TRD2/RG14                 | TRACE PORT          |
+| 5   | TRD1/RG12                 | TRACE PORT          |
+| 7   | PMPD7/RE7                 | PMP DATA [7:0]      |
+| 9   | PMPD6/RE6                 | PMP DATA [7:0]      |
+| 11  | **GND**             | Ground              |
+| 13  | PMPD5/RE5                 | PMP DATA [7:0]      |
+| 15  | PMPD4/RE4                 | PMP DATA [7:0]      |
+| 17  | PMPD3/RE3                 | PMP DATA [7:0]      |
+| 19  | PMPD2/RE2                 | PMP DATA [7:0]      |
+| 21  | PMPD1/RE1                 | PMP DATA [7:0]      |
+| 23  | PMPD0/RE0                 | PMP DATA [7:0]      |
+| 25  | PMPRD/CN14/RD5            | PMP CONTROL         |
+| 27  | *(no connect)*          | PMP CONTROL         |
+| 29  | SCK1/IC3/PMPCS2/RD10      | PMP CONTROL         |
+| 31  | SOSCO/T1CK/CN0/RC14       | SECONDARY OSC       |
+| 33  | **GND**             | Ground              |
+| 35  | T2CLK/RC1                 | (5) TIMERS          |
+| 37  | T3CLK/RC2                 | (5) TIMERS          |
+| 39  | T4CLK/RC3                 | (5) TIMERS          |
+| 41  | SDI1/T5CLK/RC4            | (5) TIMERS          |
+| 43  | *(no connect)*          | —                  |
+| 45  | PMPA5/SCM2C/CN8/RG6       | SPI2                |
+| 47  | PMPA4/SCM2A/CN9/RG7       | SPI2                |
+| 49  | *(no connect)*          | SPI2                |
+| 51  | *(no connect)*          | SPI2                |
+| 53  | *(no connect)*          | SPI2                |
+| 55  | **GND**             | Ground              |
+| 57  | *(no connect)*          | —                  |
+| 59  | DBG_SMSDA                 | DEBUG SMBUS         |
+| 61  | DBG_SMSCL                 | DEBUG SMBUS         |
+| 63  | VBUSON/C1IN+/AN5/CN7/RB5  | COMPARATOR 1        |
+| 65  | USBOEN/C1IN–/AN4/CN6/RB4 | COMPARATOR 1        |
+| 67  | C2IN+/AN3/CN5/RB3         | COMPARATOR 2        |
+| 69  | C2IN–/AN2/CN4/RB2        | COMPARATOR 2        |
+| 71  | C1OUT/AN5/RB5             | COMPARATOR 1 output |
+| 73  | C2OUT/AN9/RB9             | COMPARATOR 2 output |
+| 75  | *(no connect)*          | —                  |
+| 77  | **GND**             | Ground              |
+| 79  | *(no connect)*          | (5) EXT_INT         |
+| 81  | *(no connect)*          | (5) EXT_INT         |
+| 83  | *(no connect)*          | (5) EXT_INT         |
+| 85  | *(no connect)*          | (5) EXT_INT         |
+| 87  | SDO1/INT0/OC1/RD0         | (5) EXT_INT         |
+| 89  | *(no connect)*          | —                  |
+| 91  | SCK1/IC3/PMPCS2/RD10      | SPI1                |
+| 93  | SDI1/T5CLK/RC4            | SPI1                |
+| 95  | SDO1/INT0/OC1/RD0         | SPI1                |
+| 97  | C2IN–/AN2/CN4/RB2        | SPI1                |
+| 99  | **GND**             | Ground              |
+| 101 | PMPA13/CVREF/AN10         | PMP ADDRESS         |
+| 103 | PMPA12/AN11/RB11          | PMP ADDRESS         |
+| 105 | PMPA11/AN12/RB12          | PMP ADDRESS         |
+| 107 | PMPA10/AN13/RB13          | PMP ADDRESS         |
+| 109 | PMPA9/SCM3A/CN17/RF4      | PMP ADDRESS         |
+| 111 | PMPA8/SCM3B/CN18/RF5      | PMP ADDRESS         |
+| 113 | PMPA7/VREF–/RA9          | PMP ADDRESS         |
+| 115 | PMPA6/VREF+/RA10          | PMP ADDRESS         |
+| 117 | PMPA5/SCM2C/CN8/RG6       | PMP ADDRESS         |
+| 119 | PMPA4/SCM2A/CN9/RG7       | PMP ADDRESS         |
+| 121 | **GND**             | Ground              |
+| 123 | *(no connect)*          | —                  |
+| 125 | *(no connect)*          | —                  |
+| 127 | PMPA1/AN14/RB14           | PMP ADDRESS         |
+| 129 | PMPA0/AN15/OCFB/CN12      | PMP ADDRESS         |
+| 131 | *(no connect)*          | —                  |
+
+---
+
+### J2 Pinout — Even Pins (Right Column)
+
+| Pin | Signal                    | Group           |
+| --- | ------------------------- | --------------- |
+| 2   | **+5V_EXT**         | Power           |
+| 4   | TRCLK/RA6                 | TRACE PORT      |
+| 6   | TRD3/RA7                  | TRACE PORT      |
+| 8   | TRD0/RG13                 | TRACE PORT      |
+| 10  | PMPD8/RG0                 | PMP DATA [15:8] |
+| 12  | **GND**             | Ground          |
+| 14  | PMPD9/RG1                 | PMP DATA [15:8] |
+| 16  | PMPD10/RF1                | PMP DATA [15:8] |
+| 18  | PMPD11/RF0                | PMP DATA [15:8] |
+| 20  | CS/PMPD12/RD12            | PMP DATA [15:8] |
+| 22  | CN19/PMPD13/RD13          | PMP DATA [15:8] |
+| 24  | PMPD14/CN15/RD6           | PMP DATA [15:8] |
+| 26  | PMPD15/CN16/RD7           | PMP DATA [15:8] |
+| 28  | PMPWR/OC5/CN13/RD4        | PMP CONTROL     |
+| 30  | *(no connect)*          | —              |
+| 32  | SOSCI/CN1/RC13            | SECONDARY OSC   |
+| 34  | **GND**             | Ground          |
+| 36  | SOSCO/T1CK/CN0/RC14       | SECONDARY OSC   |
+| 38  | PMPA0/AN15/OCFB/CN12      | —              |
+| 40  | PMPWR/OC5/CN13/RD4        | OC-PWM          |
+| 42  | OC4/RD3                   | (2) OC-PWM      |
+| 44  | OC3/RD2                   | (2) OC-PWM      |
+| 46  | OC2/RD1                   | (2) OC-PWM      |
+| 48  | SDO1/INT0/OC1/RD0         | OC-PWM          |
+| 50  | CS/PMPD12/RD12            | INPUT CAPTURE   |
+| 52  | SCK1/IC3/PMPCS2/RD10      | INPUT CAPTURE   |
+| 54  | SS1/IC2/RD9               | INPUT CAPTURE   |
+| 56  | **GND**             | Ground          |
+| 58  | *(no connect)*          | —              |
+| 60  | *(no connect)*          | —              |
+| 62  | VBUSON/C1IN+/AN5/CN7/RB5  | (8CH) A/D       |
+| 64  | USBOEN/C1IN–/AN4/CN6/RB4 | (8CH) A/D       |
+| 66  | C2IN+/AN3/CN5/RB3         | (8CH) A/D       |
+| 68  | C2IN–/AN2/CN4/RB2        | (8CH) A/D       |
+| 70  | PGC1/AN1/CN3/RB1          | (8CH) A/D       |
+| 72  | PGD1/AN0/CN2/RB0          | (8CH) A/D       |
+| 74  | SDA2/RA3                  | I2C2            |
+| 76  | SCL2/RA2                  | I2C2            |
+| 78  | **GND**             | Ground          |
+| 80  | *(no connect)*          | I2C1            |
+| 82  | *(no connect)*          | I2C1            |
+| 84  | *(no connect)*          | I2C1            |
+| 86  | *(no connect)*          | I2C1            |
+| 88  | SCM1A/RF2                 | UART1           |
+| 90  | SCM1B/RF8                 | UART1           |
+| 92  | *(no connect)*          | UART1           |
+| 94  | *(no connect)*          | UART1           |
+| 96  | *(no connect)*          | —              |
+| 98  | *(no connect)*          | —              |
+| 100 | **GND**             | Ground          |
+| 102 | PMPA13/CVREF/AN10         | COMPARATOR REF  |
+| 104 | *(no connect)*          | —              |
+| 106 | SCM3D/RG12/RF13           | UART2           |
+| 108 | SCM3C/RF12                | UART2           |
+| 110 | PMPA9/SCM3A/CN17/RF4      | UART2           |
+| 112 | PMPA8/SCM3B/CN18/RF5      | UART2           |
+| 114 | PMPA7/VREF–/RA9          | A/D REF         |
+| 116 | PMPA6/VREF+/RA10          | A/D REF         |
+| 118 | TDO/RA5                   | JTAG/ICSP       |
+| 120 | TDI/RA4                   | JTAG/ICSP       |
+| 122 | **GND**             | Ground          |
+| 124 | TCK/RA1                   | JTAG/ICSP       |
+| 126 | TMS/RA0                   | JTAG/ICSP       |
+| 128 | PIC32_PGC2                | ICSP            |
+| 130 | PIC32_MCLR                | ICSP            |
+| 132 | PIC32_PGD2                | ICSP            |
+
+---
+
+### Power and Ground Summary for J2
+
+| Net               | Pin(s)                                            |
+| ----------------- | ------------------------------------------------- |
+| **P32_VDD** | 1                                                 |
+| **+5V_EXT** | 2                                                 |
+| **GND**     | 11, 12, 33, 34, 55, 56, 77, 78, 99, 100, 121, 122 |
+
+---
+
+### Updated Connector Index
+
+| Ref | Description                                     | Figure        |
+| --- | ----------------------------------------------- | ------------- |
+| J1  | Debugger USB port                               | A-7           |
+| J2  | **Application board connector (132-pin)** | **A-9** |
+| J3  | DBG ICSP header                                 | A-7           |
+| J4  | USB Host port — Type A                         | A-6           |
+| J5  | USB Device/OTG port — Type Micro A/B           | A-6           |
+| J6  | RJ-45 MagJack, SI-60062-F                       | A-4           |
+| JP2 | Debugger power jumper                           | A-6           |
+
+---
+
+*DS61166A-page 27 — © 2010 Microchip Technology Inc.*
+
+> **Transcription note:** This page consists of a single large schematic drawing (Figure A-9).
+> The pin tables above reconstruct the net names and pin numbering as printed on the sheet.
+> Pin-number-to-signal alignment and several pin-name suffixes were recovered from
+> low-resolution artwork; entries marked *(no connect)* correspond to pin positions where no
+> net label is legible. Verify against the original Microchip document **DS61166A** before
+> designing an application board against this connector.
+>
+
+---
+
+## Firmware Architecture
+
+### Toolchain
+
+- **MCU:** PIC32MX795F512L (100-pin, 512KB Flash, 128KB RAM)
+- **IDE:** MPLAB X IDE
+- **Compiler:** XC32 v5.10
+- **Code Generator:** MCC (Microchip Code Configurator)
+- **RTOS:** FreeRTOS (included, tasks defined in `src/config/default/tasks.c`)
+
+### Clock Configuration
+
+| Clock | Frequency | Source |
+|-------|-----------|--------|
+| Primary Oscillator | 8MHz crystal (Y2) | FNOSC = PRIPLL |
+| PLL Multiplier | MUL_20 | FPLLMUL = MUL_20 |
+| CPU Clock (SYSCLK) | 80MHz | 8MHz × 20 |
+| Peripheral Clock (PBCLK) | 80MHz | 1:1 divider |
+
+### Timer Allocation
+
+| Timer | Vector | Purpose | Configured By |
+|-------|--------|---------|---------------|
+| TMR1 | 4 | FreeRTOS 1ms tick | `port.c` (on `vTaskStartScheduler()`) |
+| TMR2 | 8 | SYS_TIME backend (1ms) | `initialization.c` → `sysTimePlibAPI` |
+| TMR3 | 12 | LED timing / future use | `main.c` → `TMR3_Initialize_LED()` |
+
+**Why TMR1 is not initialized by MCC:**
+FreeRTOS `port.c` directly programs TMR1's hardware registers (prescaler=8, PR1 for 1ms)
+when `vTaskStartScheduler()` runs. Calling `TMR1_Initialize()` from `SYS_Initialize` would
+conflict with the RTOS. TMR1 is intentionally left unconfigured in `initialization.c`.
+
+**Why TMR3 uses polling instead of interrupts:**
+The MCC-generated ISR wrappers in `interrupts_a.S` use FreeRTOS `portSAVE_CONTEXT` /
+`portRESTORE_CONTEXT` macros for all interrupt vectors. These macros require the FreeRTOS
+scheduler to be running. Since `main()` runs a bare-metal loop without calling
+`vTaskStartScheduler()`, hardware ISRs would crash. TMR3 polls the `T3IF` flag via
+`EVIC_SourceStatusGet()` / `EVIC_SourceStatusClear()` instead.
+
+### LED Implementation
+
+The running LED sequence (LED1 → LED2 → LED3, 100ms each) uses TMR3 in polling mode:
+
+1. `TMR3_Initialize_LED()` computes the period register from `TMR3_FrequencyGet()` at
+   runtime (no hardcoded clock values), sets a 500µs period, disables the interrupt, and
+   starts the timer.
+2. `TMR3_DelayMs()` polls the TMR3 interrupt flag. Two 500µs periods = 1ms.
+3. The main loop cycles through the three LEDs with `TMR3_DelayMs(100)`.
+
+**Why 500µs and not 1ms?** TMR3 is 16-bit with a 1:1 prescaler at 80MHz. A 1ms period
+would need PR=79999, which exceeds the 65535 maximum. So we use 500µs (PR=39999) and
+count 2 periods per millisecond.
+
+### Timing Options Available
+
+| Function | Source | Blocking | RTOS-aware | Resolution |
+|----------|--------|----------|------------|------------|
+| `TMR3_DelayMs()` | TMR3 polling | Yes | No | 500µs |
+| `SYS_TIME_DelayMS()` | TMR2 (SYS_TIME) | No (poll) | No | 1ms |
+| `vTaskDelay()` | FreeRTOS (TMR1) | Yes (yields) | Yes | 1ms |
+| `xTaskDelayUntil()` | FreeRTOS (TMR1) | Yes (yields) | Yes | 1ms |
+
+### NET_PRES Layer
+
+The Network Presentation (NET_PRES) layer requires two configuration constants in
+`configuration.h`:
+
+```c
+#define NET_PRES_NUM_INSTANCE   1
+#define NET_PRES_NUM_SOCKETS    (TCPIP_TCP_MAX_SOCKETS + TCPIP_UDP_MAX_SOCKETS)
+```
+
+**Note:** MCC overwrites `configuration.h` when regenerating code. These constants must be
+re-added after every MCC code generation if NET_PRES is not configured through the MCC UI.
+
+### Build
+
+```
+make -f nbproject/Makefile-default.mk SUBPROJECTS= .build-conf
+```
+
+Or use MPLAB X IDE: **Clean and Build** button.
+
+### Project Structure
+
+```
+src/
+├── main.c                          # Entry point, LED timer (TMR3)
+├── app.c / app.h                   # Application state machine
+├── config/default/
+│   ├── configuration.h             # MCC-generated config (NET_PRES constants added)
+│   ├── definitions.h              # Module handles and API includes
+│   ├── initialization.c           # SYS_Initialize() — all module init
+│   ├── interrupts.c               # ISR handler stubs
+│   ├── interrupts_a.S             # ISR vector dispatch (FreeRTOS context save/restore)
+│   ├── tasks.c                    # FreeRTOS task creation + vTaskStartScheduler()
+│   ├── FreeRTOSConfig.h           # FreeRTOS configuration
+│   ├── peripheral/
+│   │   ├── tmr1/                  # TMR1 PLIB (FreeRTOS tick — not init by MCC)
+│   │   ├── tmr/                   # TMR2, TMR3 PLIB (SYS_TIME + LED)
+│   │   ├── coretimer/             # Core Timer PLIB (not in build)
+│   │   ├── uart/                  # UART1 PLIB
+│   │   ├── evic/                  # EVIC (interrupt controller)
+│   │   ├── gpio/                  # GPIO PLIB
+│   │   └── ...
+│   ├── system/                    # SYS_TIME, SYS_CONSOLE, SYS_FS, cache
+│   ├── driver/                    # ETH MAC, ETH PHY, MIIM, USB
+│   ├── library/tcpip/             # TCP/IP stack (Harmony 3)
+│   ├── net_pres/                  # Network Presentation layer
+│   └── bsp/                       # Board Support Package (LEDs, switches)
+└── third_party/
+    ├── rtos/FreeRTOS/             # FreeRTOS source
+    └── wolfssl/                   # wolfSSL TLS library
+```
+
