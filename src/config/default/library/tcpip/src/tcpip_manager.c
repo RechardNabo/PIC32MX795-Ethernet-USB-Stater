@@ -57,7 +57,14 @@ Microchip or any third party.
 #include <cp0defs.h>
 #endif // defined(TCPIP_STACK_TIME_MEASUREMENT)
 
+/* Debug: extern console print for bare-metal debugging */
+extern void Console_Println(const char *msg);
+
 #define TCPIP_STACK_HDR_MESSAGE   "TCP/IP Stack: "
+
+/* Debug: track TCPIP init failure code (0 = success, >0 = failed at step N) */
+int g_tcpipInitFailCode = 0;
+int g_tcpipBringUpFailCode = 0;  /* Sub-code for BringNetUp failure */
 
 // MAC events enabled by the stack manager
 #define TCPIP_STACK_MAC_ALL_EVENTS          ((uint32_t)TCPIP_MAC_EV_RX_DONE | (uint32_t)TCPIP_MAC_EV_TX_DONE | (uint32_t)TCPIP_MAC_EV_RXTX_ERRORS)
@@ -1222,6 +1229,7 @@ static bool F_TCPIP_DoInitialize(const TCPIP_STACK_INIT * init)
 
 
     SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "Initialization failed %d - Aborting! \r\n", initFail);
+    g_tcpipInitFailCode = initFail;  /* Debug: expose failure code */
     TCPIP_STACK_KillStack();
     return false;
 
@@ -1300,6 +1308,7 @@ static bool TCPIP_STACK_BringNetUp(TCPIP_STACK_MODULE_CTRL* stackCtrlData, const
                 {
                     pNetIf->macObjHandle = 0;
                     SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "%s MAC initialization failed\r\n", pMacObj->macName);
+                    g_tcpipBringUpFailCode = 1;  /* MAC_Initialize failed */
                     netUpFail = 1;
                     break;
                 }
@@ -1311,6 +1320,7 @@ static bool TCPIP_STACK_BringNetUp(TCPIP_STACK_MODULE_CTRL* stackCtrlData, const
                     pNetIf->hIfMac = 0;
                     pNetIf->macObjHandle = 0;
                     SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "%s MAC Open failed\r\n", pMacObj->macName);
+                    g_tcpipBringUpFailCode = 2;  /* MAC_Open failed */
                     netUpFail = 1;
                     break;
                 }
@@ -1350,6 +1360,7 @@ static bool TCPIP_STACK_BringNetUp(TCPIP_STACK_MODULE_CTRL* stackCtrlData, const
                 if(!pEntry->initFunc(stackCtrlData, configData))
                 {
                     SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "Module no: %d Initialization failed\r\n", pEntry->moduleId);
+                    g_tcpipBringUpFailCode = 100 + (int)pEntry->moduleId;  /* Module init failed */
                     netUpFail = 1;
                     break;
                 }
@@ -2019,6 +2030,7 @@ static bool F_TCPIPStackIsRunState(void)
             TCPIP_STACK_KillStack();
             tcpip_stack_status = SYS_STATUS_ERROR;
             SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "Initialization SYS TMR failed: %d - Aborting! \r\n", tmrStat);
+            Console_Println("[TCPIP] SYS TMR failed");
             return false;
         }
     }
@@ -2037,6 +2049,7 @@ static bool F_TCPIPStackIsRunState(void)
                 SYS_STATUS macStat = (*pNetIf->pMacObj->MAC_Status)(pNetIf->macObjHandle);
                 if(macStat < (SYS_STATUS)0)
                 {   // failed; kill the interface
+                    Console_Println("[TCPIP] MAC init failed");
                     TCPIP_STACK_BringNetDown(&tcpip_stack_ctrl_data, pNetIf, TCPIP_STACK_ACTION_IF_DOWN, TCPIP_MAC_POWER_DOWN);
                     pNetIf->Flags.bMacInitDone = 1;
                 }
@@ -2159,6 +2172,7 @@ static bool F_TCPIPStackIsRunState(void)
             }
             tcpip_stack_status = SYS_STATUS_ERROR;
             SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "Interface Initialization failed: 0x%x - Aborting! \r\n", ifUpMask);
+            Console_Println("[TCPIP] Interface init failed");
             return false;
         }
     }

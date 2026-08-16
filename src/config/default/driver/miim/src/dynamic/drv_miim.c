@@ -56,6 +56,7 @@ Microchip or any third party.
 
 #include "system/sys_time_h2_adapter.h"
 #include "system/debug/sys_debug.h"
+#include <stdio.h>
 
 
 
@@ -1083,8 +1084,39 @@ static void MIIM_Process_Read(DRV_MIIM_OBJ * pMiimObj, DRV_MIIM_OP_DCPT* pOpDcpt
     {
         case (uint8_t)DRV_MIIM_TXFER_START:
             if( DRV_MIIM_PortBusy(pMiimObj->miimId) )
-            {   // some previous operation; wait
-                break;
+            {   // MIIM stuck busy — try forcing a full EMAC1 reset
+                // to clear the stuck MIIM state
+                {
+                    /* EMAC1CFG1 SOFTRESET = bit 15 */
+                    EMAC1CFG1SET = 0x8000U;
+                    volatile uint32_t dly;
+                    for (dly = 0; dly < 1000U; dly++) { Nop(); }
+                    EMAC1CFG1CLR = 0x8000U;
+                    for (dly = 0; dly < 1000U; dly++) { Nop(); }
+                    /* Re-enable ETH (ETHCON1.ON = bit 15) */
+                    ETHCON1SET = 0x8000U;
+                    for (dly = 0; dly < 1000U; dly++) { Nop(); }
+                    /* MIIM reset (EMAC1MCFG.RESETMGMT = bit 15) */
+                    EMAC1MCFGSET = 0x8000U;
+                    for (dly = 0; dly < 1000U; dly++) { Nop(); }
+                    EMAC1MCFGCLR = 0x8000U;
+                    for (dly = 0; dly < 10000U; dly++) { Nop(); }
+                    /* Reconfigure MIIM clock: CLKSEL=8 (bits [5:2]) = 2MHz */
+                    EMAC1MCFG = (EMAC1MCFG & ~0x3CU) | (8U << 2);
+
+                    extern void Console_Println(const char *msg);
+                    char dbgBuf[64];
+                    (void)snprintf(dbgBuf, sizeof(dbgBuf),
+                                   "[MIIM] After reset MIND=0x%x MCFG=0x%x",
+                                   (unsigned)(EMAC1MIND & 0xFU),
+                                   (unsigned)EMAC1MCFG);
+                    Console_Println(dbgBuf);
+                }
+                /* Check again */
+                if( DRV_MIIM_PortBusy(pMiimObj->miimId) )
+                {   // still stuck; give up
+                    break;
+                }
             }
 
             // start read

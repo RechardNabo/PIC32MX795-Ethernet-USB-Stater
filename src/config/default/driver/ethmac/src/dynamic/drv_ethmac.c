@@ -27,6 +27,10 @@ Microchip or any third party.
 
 
 #include "driver/ethmac/src/dynamic/drv_ethmac_lib.h"
+#include <stdio.h>
+
+/* Debug: extern console print for bare-metal debugging */
+extern void Console_Println(const char *msg);
 
 /** D E F I N I T I O N S ****************************************************/
 
@@ -749,8 +753,13 @@ void DRV_ETHMAC_PIC32MACTasks(SYS_MODULE_OBJ object)
 
             if ( phyInitRes != DRV_ETHPHY_RES_OK )
             {
+                {
+                    char dbgBuf[48];
+                    (void)snprintf(dbgBuf, sizeof(dbgBuf), "[MAC] PHY init failed: %d", (int)phyInitRes);
+                    Console_Println(dbgBuf);
+                }
                 F_MACDeinit(pMacD);
-                pMacD->mData.sysStat = SYS_STATUS_ERROR; 
+                pMacD->mData.sysStat = SYS_STATUS_ERROR;
                 SYS_ERROR_PRINT(SYS_ERROR_ERROR, "DRV PHY init failed: %d\r\n", phyInitRes);
                 break;
             }

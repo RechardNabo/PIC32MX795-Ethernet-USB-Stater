@@ -31,7 +31,7 @@
 #include "definitions.h"
 
 /* Console buffer sizes */
-#define CONSOLE_TX_BUFFER_SIZE   256U
+#define CONSOLE_TX_BUFFER_SIZE   1024U
 #define CONSOLE_RX_BUFFER_SIZE   128U
 
 /* Console states */

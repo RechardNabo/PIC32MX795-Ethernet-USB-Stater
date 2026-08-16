@@ -74,15 +74,27 @@ static const uint16_t T_MIIMClockDivisorTable[]=
 
 
 static DRV_MIIM_RESULT F_DRV_MIIM_Enable(uintptr_t miimId)
-{        
+{
     DRV_ETHERNET_REGISTERS* ethId = (DRV_ETHERNET_REGISTERS*)miimId;
     DRV_MIIM_RESULT res = DRV_MIIM_RES_OK;
 
-    if(!DRV_ETH_IsEnabled(ethId)) 
-    { 
-        DRV_ETH_Enable(ethId);  
+    /* Perform a full EMAC1 soft reset to clear any stuck state */
+    DRV_ETH_MIIResetEnable(ethId);
+    {
+        volatile uint32_t dly;
+        for (dly = 0; dly < 1000U; dly++) { Nop(); }
+    }
+    DRV_ETH_MIIResetDisable(ethId);
+    {
+        volatile uint32_t dly;
+        for (dly = 0; dly < 1000U; dly++) { Nop(); }
+    }
+
+    if(!DRV_ETH_IsEnabled(ethId))
+    {
+        DRV_ETH_Enable(ethId);
         res = DRV_MIIM_RES_INIT_WARNING;
-    } 
+    }
     DRV_ETH_MIIResetDisable(ethId);
     return res;
 }
@@ -121,7 +133,20 @@ static void F_DRV_MIIM_SMIClockSet(uintptr_t miimId, uint32_t hostClock, uint32_
     DRV_ETHERNET_REGISTERS* ethId = (DRV_ETHERNET_REGISTERS*)miimId;
     size_t  ix;
     DRV_ETH_MIIMResetEnable(ethId); // Issue MIIM reset
+    /* Wait at least 1 MDC cycle for reset to take effect */
+    {
+        volatile uint32_t dly;
+        for (dly = 0; dly < 1000U; dly++) { Nop(); }
+    }
     DRV_ETH_MIIMResetDisable(ethId); // Clear MIIM reset
+    /* Wait for MIIMBUSY to clear after reset */
+    {
+        volatile uint32_t dly;
+        for (dly = 0; dly < 10000U; dly++)
+        {
+            if (!DRV_ETH_MIIMIsBusy(ethId)) break;
+        }
+    }
 
     for(ix = 0; ix < sizeof(T_MIIMClockDivisorTable) / sizeof(*T_MIIMClockDivisorTable); ix++)
     {

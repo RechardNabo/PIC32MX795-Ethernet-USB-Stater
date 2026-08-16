@@ -1,0 +1,39 @@
+; Microchip CDC Virtual COM Port Driver INF
+; For PIC32 USB CDC devices with VID=0x04D8 PID=0x000A
+; This INF forces Windows to use usbser.sys with proper COM port symlink creation.
+
+[Version]
+Signature   = "$Windows NT$"
+Class       = Ports
+ClassGuid   = {4D36E978-E325-11CE-BFC1-08002BE10318}
+Provider    = %ProviderName%
+DriverVer   = 01/01/2024,1.0.0.0
+CatalogFile = mchpcdc.cat
+
+[Manufacturer]
+%ProviderName% = DeviceList, NTamd64, NTx86
+
+[DeviceList.NTamd64]
+%DeviceName% = USBSerial, USB\VID_04D8&PID_000A
+
+[DeviceList.NTx86]
+%DeviceName% = USBSerial, USB\VID_04D8&PID_000A
+
+[USBSerial]
+Include = mdmcpq.inf
+Needs   = Modem.CopyData
+
+AddReg  = USBSerial_AddReg
+
+[USBSerial.Services]
+Include = mdmcpq.inf
+Needs   = Modem.AddService
+
+[USBSerial_AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,usbser.sys
+HKR,,EnumPropPages32,,Modem.cpl
+
+[Strings]
+ProviderName = "Microchip Technology Inc."
+DeviceName   = "Microchip CDC Virtual COM Port"

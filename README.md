@@ -958,12 +958,74 @@ INIT → OPEN_DEVICE → WAIT_CONFIG → READY
 ```
 
 The console uses ring buffers (256-byte TX, 128-byte RX) and non-blocking USB
-CDC transfers. The main loop calls `Console_Tasks()` every 10ms alongside the
-LED/switch code. When connected, switch presses are reported to the console and
-characters typed in the terminal are echoed back.
+CDC transfers. The main loop calls `USB_DEVICE_Tasks()` then `Console_Tasks()`
+every 10ms alongside the LED/switch code. When connected, switch presses are
+reported to the console and characters typed in the terminal are echoed back.
 
-**USB Descriptors:** VID=0x04D8 (Microchip), PID=0x0000, CDC ACM class, full-speed.
+**Critical: `USB_DEVICE_Tasks()` must be polled in the main loop.**
+The MCC-generated `tasks.c` wraps `USB_DEVICE_Tasks()` in a FreeRTOS task
+(`F_USB_DEVICE_Tasks`) created by `SYS_Tasks()`. But `main()` runs a bare-metal
+loop without calling `SYS_Tasks()` or `vTaskStartScheduler()`. Without polling
+`USB_DEVICE_Tasks()` directly, the USB device layer never opens the USB driver,
+never processes enumeration, and the CDC device never appears in Device Manager.
+The USB driver-level ISR (`USB_1_Handler` → `DRV_USBFS_USB_Handler`) handles
+low-level packet transfers via interrupt, but the device-layer state machine
+that handles setup requests and configuration must be polled.
+
+**Critical: `USB_DEVICE_Attach()` must be called after opening the device.**
+`USB_DEVICE_Attach()` enables the D+ pull-up resistor, which signals to the
+USB host that a device is present. Without this call, the host never sees the
+device and enumeration never begins — nothing appears in Device Manager. The
+console code calls `USB_DEVICE_Attach()` in two places:
+1. Immediately after `USB_DEVICE_EventHandlerSet()` — handles the case where
+   VBUS is already present when the handler is registered
+2. In the `USB_DEVICE_EVENT_POWER_DETECTED` event handler — handles the case
+   where VBUS appears after the handler is registered
+
+**Critical: USB driver must use polling mode (not interrupt mode).**
+The MCC-generated `interrupts_a.S` wraps all ISRs with FreeRTOS
+`portSAVE_CONTEXT`/`portRESTORE_CONTEXT` macros. These macros access
+`xISRStackTop` and `uxSavedTaskStackPointer` — FreeRTOS variables that are
+only initialized when `vTaskStartScheduler()` is called. Since `main()` runs
+a bare-metal loop without the scheduler, the USB ISR crashes on the first
+interrupt, causing "Code 43 — descriptor request failed."
+
+The fix is to set `DRV_USBFS_INTERRUPT_MODE` to `false` in `configuration.h`
+and call `DRV_USBFS_Tasks(sysObj.drvUSBFSObject)` frequently in the main loop.
+In polling mode, the USB driver polls hardware interrupt flags directly — no
+ISR needed. `DRV_USBFS_Tasks` is called both at the top of the main loop and
+inside `TMR3_DelayMs()` (every ~500µs during the delay) to ensure USB events
+are processed quickly enough for enumeration.
+
+**Note:** If MCC regenerates `configuration.h`, change `DRV_USBFS_INTERRUPT_MODE`
+back to `false`.
+
+**USB Descriptors:** VID=0x04D8 (Microchip), PID=0x000A, CDC ACM class, full-speed.
 Defined in `src/config/default/usb_device_init_data.c`.
+
+**Critical: CDC class-specific requests must be handled in the CDC event handler.**
+Windows `usbser.sys` sends `GET_LINE_CODING`, `SET_LINE_CODING`, and
+`SET_CONTROL_LINE_STATE` control transfers during driver startup. If the
+device doesn't respond to these, `usbser.sys` fails to start and the COM port
+device interface (the `\??\COMx` symbolic link) is never created. The device
+appears in Device Manager with Status OK (because USB enumeration succeeded),
+but no software can open the COM port.
+
+The CDC event handler in `console.c` must:
+- `USB_DEVICE_CDC_EVENT_GET_LINE_CODING`: call `USB_DEVICE_ControlSend()` with
+  a `USB_CDC_LINE_CODING` structure (baud rate, stop bits, parity, data bits)
+- `USB_DEVICE_CDC_EVENT_SET_LINE_CODING`: call `USB_DEVICE_ControlReceive()`
+  to accept the host's line coding data
+- `USB_DEVICE_CDC_EVENT_SET_CONTROL_LINE_STATE`: call
+  `USB_DEVICE_ControlStatus(USB_DEVICE_CONTROL_STATUS_OK)` to acknowledge
+- `USB_DEVICE_CDC_EVENT_SEND_BREAK`: call
+  `USB_DEVICE_ControlStatus(USB_DEVICE_CONTROL_STATUS_OK)` to acknowledge
+
+**Note on PID and serial number:** The original MCC default PID was 0x0000, which
+causes Windows `usbser.sys` to fail creating the COM port device path. PID
+0x000A is used instead. A serial number string descriptor (index 3) is also
+included — Windows requires a serial number for CDC devices to properly create
+the COM port device interface.
 
 ### NET_PRES Layer
 

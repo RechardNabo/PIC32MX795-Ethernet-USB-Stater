@@ -77,11 +77,88 @@ IntVectorTIMER_2_Handler:
    .ent  _TIMER_2_Handler
 
 _TIMER_2_Handler:
-    portSAVE_CONTEXT
-    la    s6,  TIMER_2_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper — does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, TIMER_2_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _TIMER_2_Handler
    .extern  TIMER_3_Handler
 
@@ -108,11 +185,88 @@ IntVectorTIMER_3_Handler:
    .ent  _TIMER_3_Handler
 
 _TIMER_3_Handler:
-    portSAVE_CONTEXT
-    la    s6,  TIMER_3_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, TIMER_3_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _TIMER_3_Handler
    .extern  UART_1_Handler
 
@@ -139,11 +293,88 @@ IntVectorUART_1_Handler:
    .ent  _UART_1_Handler
 
 _UART_1_Handler:
-    portSAVE_CONTEXT
-    la    s6,  UART_1_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, UART_1_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _UART_1_Handler
    .extern  DMA_0_Handler
 
@@ -170,11 +401,88 @@ IntVectorDMA_0_Handler:
    .ent  _DMA_0_Handler
 
 _DMA_0_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_0_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_0_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_0_Handler
    .extern  DMA_1_Handler
 
@@ -201,11 +509,88 @@ IntVectorDMA_1_Handler:
    .ent  _DMA_1_Handler
 
 _DMA_1_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_1_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_1_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_1_Handler
    .extern  DMA_2_Handler
 
@@ -232,11 +617,88 @@ IntVectorDMA_2_Handler:
    .ent  _DMA_2_Handler
 
 _DMA_2_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_2_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_2_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_2_Handler
    .extern  DMA_3_Handler
 
@@ -263,11 +725,88 @@ IntVectorDMA_3_Handler:
    .ent  _DMA_3_Handler
 
 _DMA_3_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_3_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_3_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_3_Handler
    .extern  DMA_4_Handler
 
@@ -294,11 +833,88 @@ IntVectorDMA_4_Handler:
    .ent  _DMA_4_Handler
 
 _DMA_4_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_4_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_4_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_4_Handler
    .extern  DMA_5_Handler
 
@@ -325,11 +941,88 @@ IntVectorDMA_5_Handler:
    .ent  _DMA_5_Handler
 
 _DMA_5_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_5_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_5_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_5_Handler
    .extern  DMA_6_Handler
 
@@ -356,11 +1049,88 @@ IntVectorDMA_6_Handler:
    .ent  _DMA_6_Handler
 
 _DMA_6_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_6_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_6_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_6_Handler
    .extern  DMA_7_Handler
 
@@ -387,11 +1157,88 @@ IntVectorDMA_7_Handler:
    .ent  _DMA_7_Handler
 
 _DMA_7_Handler:
-    portSAVE_CONTEXT
-    la    s6,  DMA_7_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper � does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, DMA_7_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _DMA_7_Handler
    .extern  USB_1_Handler
 
@@ -417,12 +1264,96 @@ IntVectorUSB_1_Handler:
    .set     noat
    .ent  _USB_1_Handler
 
+# Bare-metal USB ISR wrapper — does NOT use FreeRTOS portSAVE_CONTEXT/
+# portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+# been called (they access xISRStackTop and uxSavedTaskStackPointer).
+# Since main() runs a bare-metal loop without the FreeRTOS scheduler,
+# we save/restore registers on the current stack and return with eret.
+# Context layout matches portSAVE_CONTEXT (132 bytes) for compatibility.
 _USB_1_Handler:
-    portSAVE_CONTEXT
-    la    s6,  USB_1_Handler
-    jalr  s6
+    # Save EPC (return address) before anything else
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    # Save status register
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    # Save all general-purpose registers that the C handler may clobber
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)             # at register
+
+    # Save hi/lo registers
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    # Call the C handler (USB_1_Handler in interrupts.c)
+    la      s6, USB_1_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    # Restore hi/lo registers
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    # Restore general-purpose registers
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    # Restore EPC and STATUS, then return from interrupt
+    di
+    ehb
+    lw      k0, 124(sp)            # EPC
+    lw      k1, 128(sp)            # STATUS
+    mtc0    k0, _CP0_EPC
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _USB_1_Handler
    .extern  ETH_Handler
 
@@ -449,10 +1380,87 @@ IntVectorETH_Handler:
    .ent  _ETH_Handler
 
 _ETH_Handler:
-    portSAVE_CONTEXT
-    la    s6,  ETH_Handler
-    jalr  s6
+    # Bare-metal ISR wrapper — does NOT use FreeRTOS portSAVE_CONTEXT/
+    # portRESTORE_CONTEXT macros, which require vTaskStartScheduler() to have
+    # been called. Saves/restores registers on the current stack and returns
+    # with eret. Same layout as the USB bare-metal wrapper (132 bytes).
+    mfc0    k0, _CP0_EPC
+    addiu   sp, sp, -132
+    sw      k0, 124(sp)
+
+    mfc0    k1, _CP0_STATUS
+    sw      k1, 128(sp)
+
+    sw      ra, 120(sp)
+    sw      s8, 116(sp)
+    sw      s6, 44(sp)
+    sw      s5, 40(sp)
+    sw      t9, 112(sp)
+    sw      t8, 108(sp)
+    sw      t7, 104(sp)
+    sw      t6, 100(sp)
+    sw      t5, 96(sp)
+    sw      t4, 92(sp)
+    sw      t3, 88(sp)
+    sw      t2, 84(sp)
+    sw      t1, 80(sp)
+    sw      t0, 76(sp)
+    sw      a3, 72(sp)
+    sw      a2, 68(sp)
+    sw      a1, 64(sp)
+    sw      a0, 60(sp)
+    sw      v1, 56(sp)
+    sw      v0, 52(sp)
+    sw      $1, 16(sp)
+
+    mfhi    k0
+    sw      k0, 12(sp)
+    mflo    k0
+    sw      k0, 8(sp)
+
+    la      s6, ETH_Handler
+    jalr    s6
     nop
-    portRESTORE_CONTEXT
+
+    lw      k0, 8(sp)
+    mtlo    k0
+    lw      k0, 12(sp)
+    mthi    k0
+
+    lw      $1, 16(sp)
+    lw      v0, 52(sp)
+    lw      v1, 56(sp)
+    lw      a0, 60(sp)
+    lw      a1, 64(sp)
+    lw      a2, 68(sp)
+    lw      a3, 72(sp)
+    lw      t0, 76(sp)
+    lw      t1, 80(sp)
+    lw      t2, 84(sp)
+    lw      t3, 88(sp)
+    lw      t4, 92(sp)
+    lw      t5, 96(sp)
+    lw      t6, 100(sp)
+    lw      t7, 104(sp)
+    lw      t8, 108(sp)
+    lw      t9, 112(sp)
+    lw      s8, 116(sp)
+    lw      ra, 120(sp)
+    lw      s5, 40(sp)
+    lw      s6, 44(sp)
+
+    di
+    ehb
+    lw      k0, 124(sp)
+    mtc0    k0, _CP0_EPC
+    lw      k1, 128(sp)
+    lui     k0, 0xFFFF
+    ori     k0, k0, 0xE3FF
+    and     k1, k1, k0
+    mtc0    k1, _CP0_STATUS
+    addiu   sp, sp, 132
+    ehb
+    eret
+    nop
     .end    _ETH_Handler
 

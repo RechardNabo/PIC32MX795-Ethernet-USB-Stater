@@ -1,0 +1,531 @@
+
+# DP83848H, DP83848J, DP83848K, DP83848M, DP83848T
+
+**10/100 Mb/s Single Port PHY — Register Set**
+Document: **SNLS250E** – MAY 2008 – REVISED APRIL 2015
+Section **6.6 Memory**, pages 48–63
+© 2008–2015, Texas Instruments Incorporated
+
+---
+
+## Table of Contents
+
+- [6.6 Memory](#66-memory)
+  - [6.6.1 Register Block](#661-register-block)
+    - [Table 6-7. Register Map](#table-6-7-register-map)
+    - [Table 6-8. Register Table](#table-6-8-register-table)
+  - [6.6.1.1 Register Definition](#6611-register-definition)
+    - [6.6.1.1.1 Basic Mode Control Register (BMCR)](#66111-basic-mode-control-register-bmcr)
+    - [6.6.1.1.2 Basic Mode Status Register (BMSR)](#66112-basic-mode-status-register-bmsr)
+    - [6.6.1.1.3 PHY Identifier Register #1 (PHYIDR1)](#66113-phy-identifier-register-1-phyidr1)
+    - [6.6.1.1.4 PHY Identifier Register #2 (PHYIDR2)](#66114-phy-identifier-register-2-phyidr2)
+    - [6.6.1.1.5 Auto-Negotiation Advertisement Register (ANAR)](#66115-auto-negotiation-advertisement-register-anar)
+    - [6.6.1.1.6 Auto-Negotiation Link Partner Ability Register (ANLPAR) (BASE Page)](#66116-auto-negotiation-link-partner-ability-register-anlpar-base-page)
+    - [6.6.1.1.7 Auto-Negotiation Link Partner Ability Register (ANLPAR) (Next Page)](#66117-auto-negotiation-link-partner-ability-register-anlpar-next-page)
+    - [6.6.1.1.8 Auto-Negotiate Expansion Register (ANER)](#66118-auto-negotiate-expansion-register-aner)
+    - [6.6.1.1.9 Auto-Negotiation Next Page Transmit Register (ANNPTR)](#66119-auto-negotiation-next-page-transmit-register-annptr)
+  - [6.6.1.2 Extended Registers](#6612-extended-registers)
+    - [6.6.1.2.1 PHY Status Register (PHYSTS)](#66121-phy-status-register-physts)
+    - [6.6.1.2.2 False Carrier Sense Counter Register (FCSCR)](#66122-false-carrier-sense-counter-register-fcscr)
+    - [6.6.1.2.3 Receiver Error Counter Register (RECR)](#66123-receiver-error-counter-register-recr)
+    - [6.6.1.2.4 100 Mb/s PCS Configuration and Status Register (PCSR)](#66124-100-mbs-pcs-configuration-and-status-register-pcsr)
+    - [6.6.1.2.5 RMII and Bypass Register (RBR)](#66125-rmii-and-bypass-register-rbr)
+    - [6.6.1.2.6 LED Direct Control Register (LEDCR)](#66126-led-direct-control-register-ledcr)
+    - [6.6.1.2.7 PHY Control Register (PHYCR)](#66127-phy-control-register-phycr)
+    - [6.6.1.2.8 10BASE-T Status/Control Register (10BTSCR)](#66128-10base-t-statuscontrol-register-10btscr)
+    - [6.6.1.2.9 CD Test and BIST Extensions Register (CDCTRL1)](#66129-cd-test-and-bist-extensions-register-cdctrl1)
+    - [6.6.1.2.10 Energy Detect Control (EDCR)](#661210-energy-detect-control-edcr)
+
+---
+
+## 6.6 Memory
+
+### 6.6.1 Register Block
+
+#### Table 6-7. Register Map
+
+| Offset (Hex)                 | Offset (Decimal) | Access | Tag      | Description                                                |
+| ---------------------------- | ---------------- | ------ | -------- | ---------------------------------------------------------- |
+| 00h                          | 0                | RW     | BMCR     | Basic Mode Control Register                                |
+| 01h                          | 1                | RO     | BMSR     | Basic Mode Status Register                                 |
+| 02h                          | 2                | RO     | PHYIDR1  | PHY Identifier Register#1                                  |
+| 03h                          | 3                | RO     | PHYIDR2  | PHY Identifier Register#2                                  |
+| 04h                          | 4                | RW     | ANAR     | Auto-Negotiation Advertisement Register                    |
+| 05h                          | 5                | RW     | ANLPAR   | Auto-Negotiation Link Partner Ability Register (Base Page) |
+| 05h                          | 5                | RW     | ANLPARNP | Auto-Negotiation Link Partner Ability Register (Next Page) |
+| 06h                          | 6                | RW     | ANER     | Auto-Negotiation Expansion Register                        |
+| 07h                          | 7                | RW     | ANNPTR   | Auto-Negotiation Next Page TX                              |
+| 08h-Fh                       | 8-15             | RW     | RESERVED | RESERVED                                                   |
+| **EXTENDED REGISTERS** |                  |        |          |                                                            |
+| 10h                          | 16               | RO     | PHYSTS   | PHY Status Register                                        |
+| 11h                          | 17               | RW     | RESERVED | RESERVED                                                   |
+| 12h                          | 18               | RO     | RESERVED | RESERVED                                                   |
+| 13h                          | 19               | RW     | RESERVED | RESERVED                                                   |
+| 14h                          | 20               | RW     | FCSCR    | False Carrier Sense Counter Register                       |
+| 15h                          | 21               | RW     | RECR     | Receive Error Counter Register                             |
+| 16h                          | 22               | RW     | PCSR     | PCS Sub-Layer Configuration and Status Register            |
+| 17h                          | 23               | RW     | RBR      | RMII and Bypass Register                                   |
+| 18h                          | 24               | RW     | LEDCR    | LED Direct Control Register                                |
+| 19h                          | 25               | RW     | PHYCR    | PHY Control Register                                       |
+| 1Ah                          | 26               | RW     | 10BTSCR  | 10Base-T Status/Control Register                           |
+| 1Bh                          | 27               | RW     | CDCTRL1  | CD Test Control Register and BIST Extensions Register      |
+| 1Ch                          | 28               | RW     | RESERVED | RESERVED                                                   |
+| 1Dh                          | 29               | RW     | EDCR     | Energy Detect Control Register                             |
+| 1Eh-1Fh                      | 30-31            | RW     | RESERVED | RESERVED                                                   |
+
+---
+
+#### Table 6-8. Register Table
+
+##### Bits 15 – 8
+
+| Register Name | Addr | Tag | Bit 15 | Bit 14 | Bit 13 | Bit 12 | Bit 11 | Bit 10 | Bit 9 | Bit 8 |
+|---|---|---|---|---|---|---|---|---|---|
+| Basic Mode Control Register | 00h | BMCR | Reset | Loopback | Speed Selection | AutoNeg Enable | Power Down | Isolate | Restart AutoNeg | Duplex Mode |
+| Basic Mode Status Register | 01h | BMSR | 100Base-T4 | 100Base-TX FDX | 100Base-TX HDX | 10Base-TFDX | 10Base-THDX | Reserved | Reserved | Reserved |
+| PHY Identifier Register 1 | 02h | PHYIDR1 | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB |
+| PHY Identifier Register 2 | 03h | PHYIDR2 | OUI LSB | OUI LSB | OUI LSB | OUI LSB | OUI LSB | OUI LSB | VNDR_MDL | VNDR_MDL |
+| Auto-Negotiation Advertisement Register | 04h | ANAR | Next Page Ind | Reserved | Remote Fault | Reserved | ASM_DIR | PAUSE | T4 | TX_FD |
+| Auto-Negotiation Link Partner Ability Register (Base Page) | 05h | ANLPAR | Next Page Ind | ACK | RemoteFault | Reserved | ASM_DIR | PAUSE | T4 | TX_FD |
+| Auto-Negotiation Link Partner Ability Register Next Page | 05h | ANLPARNP | Next Page Ind | ACK | Message Page | ACK2 | Toggle | Code | Code | Code |
+| Auto-Negotiation Expansion Register | 06h | ANER | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| Auto-Negotiation Next Page TX Register | 07h | ANNPTR | Next Page Ind | Reserved | Message Page | ACK2 | TOG_TX | CODE | CODE | CODE |
+| RESERVED | 08-0fh | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| **EXTENDED REGISTERS** | | | | | | | | | | |
+| PHY Status Register | 10h | PHYSTS | Reserved | MDI-X mode | Rx Err Latch | Polarity Status | False Carrier Sense | Signal Detect | Descram Lock | Page Receive |
+| RESERVED | 11h | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| RESERVED | 12h | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| RESERVED | 13h | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| False Carrier Sense Counter Register | 14h | FCSCR | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| Receive Error Counter Register | 15h | RECR | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| PCS Sub-Layer Configuration and Status Register | 16h | PCSR | Reserved | Reserved | Reserved | Reserved | Reserved | TQ_EN | SD_FORCE_PMA | SD_OPTION |
+| RMII and Bypass Register | 17h | RBR | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| LED Direct Control Register | 18h | LEDCR | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| PHY Control Register | 19h | PHYCR | MDIX_EN | FORCE_MDIX | PAUSE_RX | PAUSE_TX | BIST_fe | PSR_15 | BIST_STATUS | BIST_START |
+| 10Base-T Status/Control Register | 1Ah | 10BT_SCR | Reserved | Reserved | Reserved | Reserved | SQUELCH | SQUELCH | SQUELCH | LOOPBACK_10_DIS |
+| CD Test Control and BIST Extensions Register | 1Bh | CDCTRL1 | BIST_ERROR_COUNT | BIST_ERROR_COUNT | BIST_ERROR_COUNT | BIST_ERROR_COUNT | BIST_ERROR_COUNT | BIST_ERROR_COUNT | BIST_ERROR_COUNT | BIST_ERROR_COUNT |
+| RESERVED | 1Ch | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| Energy Detect Control Register | 1Dh | EDCR | ED_EN | ED_AUTO_UP | ED_AUTO_DOWN | ED_MAN | ED_BURST_DIS | ED_PWR_STATE | ED_ERR_MET | ED_DATA_MET |
+| RESERVED | 1Eh-1Fh | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+
+##### Bits 7 – 0
+
+| Register Name | Addr | Tag | Bit 7 | Bit 6 | Bit 5 | Bit 4 | Bit 3 | Bit 2 | Bit 1 | Bit 0 |
+|---|---|---|---|---|---|---|---|---|---|
+| Basic Mode Control Register | 00h | BMCR | Collision Test | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| Basic Mode Status Register | 01h | BMSR | Reserved | MF Preamble Suppress | Auto-Neg Complete | Remote Fault | Auto-Neg Ability | Link Status | Jabber Detect | Extended Capability |
+| PHY Identifier Register 1 | 02h | PHYIDR1 | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB | OUI MSB |
+| PHY Identifier Register 2 | 03h | PHYIDR2 | VNDR_MDL | VNDR_MDL | VNDR_MDL | VNDR_MDL | MDL_REV | MDL_REV | MDL_REV | MDL_REV |
+| Auto-Negotiation Advertisement Register | 04h | ANAR | TX | 10_FD | 10 | Protocol Selection | Protocol Selection | Protocol Selection | Protocol Selection | Protocol Selection |
+| Auto-Negotiation Link Partner Ability Register (Base Page) | 05h | ANLPAR | TX | 10_FD | 10 | Protocol Selection | Protocol Selection | Protocol Selection | Protocol Selection | Protocol Selection |
+| Auto-Negotiation Link Partner Ability Register Next Page | 05h | ANLPARNP | Code | Code | Code | Code | Code | Code | Code | Code |
+| Auto-Negotiation Expansion Register | 06h | ANER | Reserved | Reserved | Reserved | PDF | LP_NP_ABLE | NP_ABLE | PAGE_RX | LP_AN_ABLE |
+| Auto-Negotiation Next Page TX Register | 07h | ANNPTR | CODE | CODE | CODE | CODE | CODE | CODE | CODE | CODE |
+| RESERVED | 08-0fh | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| **EXTENDED REGISTERS** | | | | | | | | | | |
+| PHY Status Register | 10h | PHYSTS | Reserved | Remote Fault | Jabber Detect | Auto-Neg Complete | Loopback Status | Duplex Status | Speed Status | Link Status |
+| RESERVED | 11h | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| RESERVED | 12h | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| RESERVED | 13h | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| False Carrier Sense Counter Register | 14h | FCSCR | FCSCNT | FCSCNT | FCSCNT | FCSCNT | FCSCNT | FCSCNT | FCSCNT | FCSCNT |
+| Receive Error Counter Register | 15h | RECR | RXERCNT | RXERCNT | RXERCNT | RXERCNT | RXERCNT | RXERCNT | RXERCNT | RXERCNT |
+| PCS Sub-Layer Configuration and Status Register | 16h | PCSR | DESC_TIME | Reserved | FORCE_100_OK | Reserved | Reserved | NRZI_BYPASS | SCRAM_BYPASS | DESCRAM_BYPASS |
+| RMII and Bypass Register | 17h | RBR | Reserved | Reserved | RMII_MODE | RMII_REV1_0 | RX_OVF_STS | RX_UNF_STS | RX_RD_PTR[1] | RX_RD_PTR[0] |
+| LED Direct Control Register | 18h | LEDCR | Reserved | Reserved | DRV_SPDLED<sup>(1)</sup> | DRV_LNKLED | Reserved | SPDLED<sup>(1)</sup> | LNKLED | Reserved |
+| PHY Control Register | 19h | PHYCR | BP_STRETCH | Reserved | LED_CNFG[0] | PHY ADDR | PHY ADDR | PHY ADDR | PHY ADDR | PHY ADDR |
+| 10Base-T Status/Control Register | 1Ah | 10BT_SCR | LP_DIS | FORC_LINK_10 | Reserved | POLARITY | Reserved | Reserved | HEART_DIS | JABBER_DIS |
+| CD Test Control and BIST Extensions Register | 1Bh | CDCTRL1 | Reserved | Reserved | BIST_CONT_MODE | CDPattEN_10 | Reserved | 10Meg_Patt_Gap | CDPattSel | CDPattSel |
+| RESERVED | 1Ch | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+| Energy Detect Control Register | 1Dh | EDCR | ED_ERR_COUNT | ED_ERR_COUNT | ED_ERR_COUNT | ED_ERR_COUNT | ED_DATA_COUNT | ED_DATA_COUNT | ED_DATA_COUNT | ED_DATA_COUNT |
+| RESERVED | 1Eh-1Fh | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+
+**(1)** DP83848J/K only.
+
+---
+
+## 6.6.1.1 Register Definition
+
+In the register definitions under the 'Default' heading, the following definitions hold true:
+
+- **RW** = **R**ead **W**rite access
+- **SC** = Register sets on event occurrence and **S**elf-**C**lears when event ends
+- **RW/SC** = **R**ead **W**rite access/**S**elf **C**learing bit
+- **RO** = **R**ead **O**nly access
+- **COR** = **C**lear **o**n **R**ead
+- **RO/COR** = **R**ead **O**nly, **C**lear on **R**ead
+- **RO/P** = **R**ead **O**nly, **P**ermanently set to a default value
+- **LL** = **L**atched **L**ow and held until read, based upon the occurrence of the corresponding event
+- **LH** = **L**atched **H**igh and held until read, based upon the occurrence of the corresponding event
+
+---
+
+### 6.6.1.1.1 Basic Mode Control Register (BMCR)
+
+#### Table 6-9. Basic Mode Control Register (BMCR), address 0x00
+
+| Bit | Bit Name                 | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --- | ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | Reset                    | 0, RW/SC | **Reset:**1 = Initiate software Reset / Reset in Process.0 = Normal operation.This bit, which is self-clearing, returns a value of one until the reset process is complete. The configuration is re-strapped.                                                                                                                                                                                                                 |
+| 14  | Loopback                 | 0, RW    | **Loopback:**1 = Loopback enabled.0 = Normal operation.The loopback function enables MII transmit data to be routed to the MII receive data path.Setting this bit may cause the descrambler to lose synchronization and produce a 500 µs "dead time" before any valid data will appear at the MII receive outputs.                                                                                                           |
+| 13  | Speed Selection          | RW       | **Speed Select:**When auto-negotiation is disabled writing to this bit allows the port speed to be selected.1 = 100 Mb/s.0 = 10 Mb/s.                                                                                                                                                                                                                                                                                         |
+| 12  | Auto-Negotiation Enable  | RW       | **Auto-Negotiation Enable:**Strap controls initial value at reset.1 = Auto-Negotiation Enabled - bits 8 and 13 of this register are ignored when this bit is set.0 = Auto-Negotiation Disabled - bits 8 and 13 determine the port speed and duplex mode.                                                                                                                                                                      |
+| 11  | Power Down               | 0, RW    | **Power Down:**1 = Power down.0 = Normal operation.Setting this bit powers down the PHY. Only the register block is enabled during a power-down condition.                                                                                                                                                                                                                                                                    |
+| 10  | Isolate                  | 0, RW    | **Isolate:**1 = Isolates the Port from the MII with the exception of the serial management.0 = Normal operation.                                                                                                                                                                                                                                                                                                              |
+| 9   | Restart Auto-Negotiation | 0, RW/SC | **Restart Auto-Negotiation:**1 = Restart Auto-Negotiation. Re-initiates the Auto-Negotiation process. If Auto-Negotiation is disabled (bit 12 = 0), this bit is ignored. This bit is self-clearing and will return a value of 1 until Auto-Negotiation is initiated, whereupon it will self-clear. Operation of the Auto-Negotiation process is not affected by the management entity clearing this bit.0 = Normal operation. |
+| 8   | Duplex Mode              | RW       | **Duplex Mode:**When auto-negotiation is disabled writing to this bit allows the port Duplex capability to be selected.1 = Full Duplex operation.0 = Half Duplex operation.                                                                                                                                                                                                                                                   |
+| 7   | Collision Test           | 0, RW    | **Collision Test:**1 = Collision test enabled.0 = Normal operation.When set, this bit will cause the COL signal to be asserted in response to the assertion of TX_EN within 512-bit times. The COL signal will be deasserted within 4-bit times in response to the deassertion of TX_EN.                                                                                                                                      |
+| 6:0 | RESERVED                 | 0, RO    | **RESERVED:** Write ignored, read as 0.                                                                                                                                                                                                                                                                                                                                                                                       |
+
+---
+
+### 6.6.1.1.2 Basic Mode Status Register (BMSR)
+
+#### Table 6-10. Basic Mode Status Register (BMSR), address 0x01
+
+| Bit  | Bit Name                  | Default  | Description                                                                                                                                                                                                                                                                                                                                                                               |
+| ---- | ------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15   | 100BASE-T4                | 0, RO/P  | **100BASE-T4 Capable:**0 = Device not able to perform 100BASE-T4 mode.                                                                                                                                                                                                                                                                                                              |
+| 14   | 100BASE-TX Full Duplex    | 1, RO/P  | **100BASE-TX Full Duplex Capable:**1 = Device able to perform 100BASE-TX in full duplex mode.                                                                                                                                                                                                                                                                                       |
+| 13   | 100BASE-TX Half Duplex    | 1, RO/P  | **100BASE-TX Half Duplex Capable:**1 = Device able to perform 100BASE-TX in half duplex mode.                                                                                                                                                                                                                                                                                       |
+| 12   | 10BASE-T Full Duplex      | 1, RO/P  | **10BASE-T Full Duplex Capable:**1 = Device able to perform 10BASE-T in full duplex mode.                                                                                                                                                                                                                                                                                           |
+| 11   | 10BASE-T Half Duplex      | 1, RO/P  | **10BASE-T Half Duplex Capable:**1 = Device able to perform 10BASE-T in half duplex mode.                                                                                                                                                                                                                                                                                           |
+| 10:7 | RESERVED                  | 0, RO    | **RESERVED:** Write as 0, read as 0.                                                                                                                                                                                                                                                                                                                                                |
+| 6    | MF Preamble Suppression   | 1, RO/P  | **Preamble suppression Capable:**1 = Device able to perform management transaction with preamble suppressed, 32-bits of preamble needed only once after reset, invalid opcode or invalid turnaround.0 = Normal management operation.                                                                                                                                                |
+| 5    | Auto-Negotiation Complete | 0, RO    | **Auto-Negotiation Complete:**1 = Auto-Negotiation process complete.0 = Auto-Negotiation process not complete.                                                                                                                                                                                                                                                                      |
+| 4    | Remote Fault              | 0, RO/LH | **Remote Fault:**1 = Remote Fault condition detected (cleared on read or by reset). Fault criteria: Notification from Link Partner of Remote Fault.0 = No remote fault condition detected.                                                                                                                                                                                          |
+| 3    | Auto-Negotiation Ability  | 1, RO/P  | **Auto Negotiation Ability:**1 = Device is able to perform Auto-Negotiation.0 = Device is not able to perform Auto-Negotiation.                                                                                                                                                                                                                                                     |
+| 2    | Link Status               | 0, RO/LL | **Link Status:**1 = Valid link established (for either 10 or 100 Mb/s operation).0 = Link not established.The criteria for link validity is implementation specific. The occurrence of a link failure condition will causes the Link Status bit to clear. Once cleared, this bit may only be set by establishing a good link condition and a read through the management interface. |
+| 1    | Jabber Detect             | 0, RO/LH | **Jabber Detect:** This bit only has meaning in 10 Mb/s mode.1 = Jabber condition detected.0 = No Jabber.This bit is implemented with a latching function, such that the occurrence of a jabber condition causes it to set until it is cleared by a read to this register by the management interface or by a reset.                                                                |
+| 0    | Extended Capability       | 1, RO/P  | **Extended Capability:**1 = Extended register capabilities.0 = Basic register set capabilities only.                                                                                                                                                                                                                                                                                |
+
+---
+
+> The PHY Identifier Registers #1 and #2 together form a unique identifier for the DP83848x. The
+> Identifier consists of a concatenation of the Organizationally Unique Identifier (OUI), the
+> vendor's model number and the model revision number. A PHY may return a value of zero in each of
+> the 32 bits of the PHY Identifier if desired. The PHY Identifier is intended to support network
+> management. National's IEEE assigned OUI is 080017h.
+
+### 6.6.1.1.3 PHY Identifier Register #1 (PHYIDR1)
+
+#### Table 6-11. PHY Identifier Register #1 (PHYIDR1), address 0x02
+
+| Bit  | Bit Name | Default                       | Description                                                                                                                                                                                                                  |
+| ---- | -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:0 | OUI_MSB  | \<0010 0000 0000 0000\>, RO/P | **OUI Most Significant Bits:**Bits 3 to 18 of the OUI (080017h) are stored in bits 15 to 0 of this register. The most significant two bits of the OUI are ignored (the IEEE standard refers to these as bits 1 and 2). |
+
+---
+
+### 6.6.1.1.4 PHY Identifier Register #2 (PHYIDR2)
+
+#### Table 6-12. PHY Identifier Register #2 (PHYIDR2), address 0x03
+
+| Bit   | Bit Name | Default           | Description                                                                                                                                                                                             |
+| ----- | -------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:10 | OUI_LSB  | \<0101 11\>, RO/P | **OUI Least Significant Bits:**Bits 19 to 24 of the OUI (080017h) are mapped from bits 15 to 10 of this register respectively.                                                                    |
+| 9:4   | VNDR_MDL | \<00 1001\>, RO/P | **Vendor Model Number:**The six bits of vendor model number are mapped from bits 9 to 4 (most significant bit to bit 9).                                                                          |
+| 3:0   | MDL_REV  | \<0000\>, RO/P    | **Model Revision Number:**Four bits of the vendor model revision number are mapped from bits 3 to 0 (most significant bit to bit 3). This field will be incremented for all major device changes. |
+
+---
+
+### 6.6.1.1.5 Auto-Negotiation Advertisement Register (ANAR)
+
+This register contains the advertised abilities of this device as they will be transmitted to its
+link partner during Auto-Negotiation. Any writes to this register prior to completion of
+Auto-Negotiation (as indicated in the Basic Mode Status Register (address 0x01) Auto-Negotiation
+complete bit, BMSR[5]) should be followed by a renegotiation. This will ensure that the new values
+are properly used in the Auto-Negotiation.
+
+#### Table 6-13. Auto-Negotiation Advertisement Register (ANAR), address 0x04
+
+| Bit | Bit Name | Default       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --- | -------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | NP       | 0, RW         | **Next Page Indication:**0 = Next Page Transfer not desired.1 = Next Page Transfer desired.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 14  | RESERVED | 0, RO/P       | **RESERVED by IEEE:** Writes ignored, Read as 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 13  | RF       | 0, RW         | **Remote Fault:**1 = Advertises that this device has detected a Remote Fault.0 = No Remote Fault detected.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 12  | RESERVED | 0, RW         | **RESERVED for Future IEEE use:** Write as 0, Read as 0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 11  | ASM_DIR  | 0, RW         | **Asymmetric PAUSE Support for Full Duplex Links:**The ASM_DIR bit indicates that asymmetric PAUSE is supported.Encoding and resolution of PAUSE bits is defined in IEEE 802.3 Annex 28B, Tables 28B-2 and 28B-3, respectively. Pause resolution status is reported in PHYCR[13:12].1 = Advertise that the DTE (MAC) has implemented both the optional MAC control sublayer and the pause function as specified in clause 31 and annex 31B of 802.3.0 = No MAC based full duplex flow control.                                               |
+| 10  | PAUSE    | 0, RW         | **PAUSE Support for Full Duplex Links:**The PAUSE bit indicates that the device is capable of providing the symmetric PAUSE functions as defined in Annex 31B.Encoding and resolution of PAUSE bits is defined in IEEE 802.3 Annex 28B, Tables 28B-2 and 28B-3, respectively. Pause resolution status is reported in PHYCR[13:12].1 = Advertise that the DTE (MAC) has implemented both the optional MAC control sublayer and the pause function as specified in clause 31 and annex 31B of 802.3.0 = No MAC based full duplex flow control. |
+| 9   | T4       | 0, RO/P       | **100BASE-T4 Support:**1 = 100BASE-T4 is supported by the local device.0 = 100BASE-T4 not supported.                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 8   | TX_FD    | Strap, RW     | **100BASE-TX Full Duplex Support:**1 = 100BASE-TX Full Duplex is supported by the local device.0 = 100BASE-TX Full Duplex not supported.                                                                                                                                                                                                                                                                                                                                                                                                     |
+| 7   | TX       | Strap, RW     | **100BASE-TX Support:**1 = 100BASE-TX is supported by the local device.0 = 100BASE-TX not supported.                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 6   | 10_FD    | RW            | **10BASE-T Full Duplex Support:**1 = 10BASE-T Full Duplex is supported by the local device.0 = 10BASE-T Full Duplex not supported.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 5   | 10       | RW            | **10BASE-T Support:**1 = 10BASE-T is supported by the local device.0 = 10BASE-T not supported.                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 4:0 | Selector | \<00001\>, RW | **Protocol Selection Bits:**These bits contain the binary encoded protocol selector supported by this port. \<00001\> indicates that this device supports IEEE 802.3.                                                                                                                                                                                                                                                                                                                                                                        |
+
+---
+
+### 6.6.1.1.6 Auto-Negotiation Link Partner Ability Register (ANLPAR) (BASE Page)
+
+This register contains the advertised abilities of the Link Partner as received during
+Auto-Negotiation. The content changes after the successful auto-negotiation if Next-pages are
+supported.
+
+#### Table 6-14. Auto-Negotiation Link Partner Ability Register (ANLPAR) (BASE Page), address 0x05
+
+| Bit | Bit Name | Default        | Description                                                                                                                                                                                                              |
+| --- | -------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 15  | NP       | 0, RO          | **Next Page Indication:**0 = Link Partner does not desire Next Page Transfer.1 = Link Partner desires Next Page Transfer.                                                                                          |
+| 14  | ACK      | 0, RO          | **Acknowledge:**1 = Link Partner acknowledges reception of the ability data word.0 = Not acknowledged.The Auto-Negotiation state machine will automatically control the this bit based on the incoming FLP bursts. |
+| 13  | RF       | 0, RO          | **Remote Fault:**1 = Remote Fault indicated by Link Partner.0 = No Remote Fault indicated by Link Partner.                                                                                                         |
+| 12  | RESERVED | 0, RO          | **RESERVED for Future IEEE use:**Write as 0, read as 0.                                                                                                                                                            |
+| 11  | ASM_DIR  | 0, RO          | **ASYMMETRIC PAUSE:**1 = Asymmetric pause is supported by the Link Partner.0 = Asymmetric pause is not supported by the Link Partner.                                                                              |
+| 10  | PAUSE    | 0, RO          | **PAUSE:**1 = Pause function is supported by the Link Partner.0 = Pause function is not supported by the Link Partner.                                                                                             |
+| 9   | T4       | 0, RO          | **100BASE-T4 Support:**1 = 100BASE-T4 is supported by the Link Partner.0 = 100BASE-T4 not supported by the Link Partner.                                                                                           |
+| 8   | TX_FD    | 0, RO          | **100BASE-TX Full Duplex Support:**1 = 100BASE-TX Full Duplex is supported by the Link Partner.0 = 100BASE-TX Full Duplex not supported by the Link Partner.                                                       |
+| 7   | TX       | 0, RO          | **100BASE-TX Support:**1 = 100BASE-TX is supported by the Link Partner.0 = 100BASE-TX not supported by the Link Partner.                                                                                           |
+| 6   | 10_FD    | 0, RO          | **10BASE-T Full Duplex Support:**1 = 10BASE-T Full Duplex is supported by the Link Partner.0 = 10BASE-T Full Duplex not supported by the Link Partner.                                                             |
+| 5   | 10       | 0, RO          | **10BASE-T Support:**1 = 10BASE-T is supported by the Link Partner.0 = 10BASE-T not supported by the Link Partner.                                                                                                 |
+| 4:0 | Selector | \<0 0000\>, RO | **Protocol Selection Bits:**Link Partner's binary encoded protocol selector.                                                                                                                                       |
+
+---
+
+### 6.6.1.1.7 Auto-Negotiation Link Partner Ability Register (ANLPAR) (Next Page)
+
+#### Table 6-15. Auto-Negotiation Link Partner Ability Register (ANLPAR) (Next Page), address 0x05
+
+| Bit  | Bit Name | Default               | Description                                                                                                                                                                                                                                                                                                                                         |
+| ---- | -------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15   | NP       | 0, RO                 | **Next Page Indication:**1 = Link Partner desires Next Page Transfer.0 = Link Partner does not desire Next Page Transfer.                                                                                                                                                                                                                     |
+| 14   | ACK      | 0, RO                 | **Acknowledge:**1 = Link Partner acknowledges reception of the ability data word.0 = Not acknowledged.The Auto-Negotiation state machine will automatically control the this bit based on the incoming FLP bursts. Software should not attempt to write to this bit.                                                                          |
+| 13   | MP       | 0, RO                 | **Message Page:**1 = Message Page.0 = Unformatted Page.                                                                                                                                                                                                                                                                                       |
+| 12   | ACK2     | 0, RO                 | **Acknowledge 2:**1 = Link Partner does have the ability to comply to next page message.0 = Link Partner does not have the ability to comply to next page message.                                                                                                                                                                            |
+| 11   | Toggle   | 0, RO                 | **Toggle:**1 = Previous value of the transmitted Link Code word equaled 0.0 = Previous value of the transmitted Link Code word equaled 1.                                                                                                                                                                                                     |
+| 10:0 | CODE     | \<000 0000 0000\>, RO | **Code:**This field represents the code field of the next page transmission. If the MP bit is set (bit 13 of this register), then the code shall be interpreted as a "Message Page," as defined in annex 28C of Clause 28. Otherwise, the code shall be interpreted as an "Unformatted Page," and the interpretation is application specific. |
+
+---
+
+### 6.6.1.1.8 Auto-Negotiate Expansion Register (ANER)
+
+This register contains additional Local Device and Link Partner status information.
+
+#### Table 6-16. Auto-Negotiate Expansion Register (ANER), address 0x06
+
+| Bit  | Bit Name   | Default   | Description                                                                                                                                                                       |
+| ---- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:5 | RESERVED   | 0, RO     | **RESERVED:** Writes ignored, Read as 0.                                                                                                                                    |
+| 4    | PDF        | 0, RO     | **Parallel Detection Fault:**1 = A fault has been detected through the Parallel Detection function.0 = A fault has not been detected.                                       |
+| 3    | LP_NP_ABLE | 0, RO     | **Link Partner Next Page Able:**1 = Link Partner does support Next Page.0 = Link Partner does not support Next Page.                                                        |
+| 2    | NP_ABLE    | 1, RO/P   | **Next Page Able:**1 = Indicates local device is able to send additional "Next Pages".                                                                                      |
+| 1    | PAGE_RX    | 0, RO/COR | **Link Code Word Page Received:**1 = Link Code Word has been received, cleared on a read.0 = Link Code Word has not been received.                                          |
+| 0    | LP_AN_ABLE | 0, RO     | **Link Partner Auto-Negotiation Able:**1 = indicates that the Link Partner supports Auto-Negotiation.0 = indicates that the Link Partner does not support Auto-Negotiation. |
+
+---
+
+### 6.6.1.1.9 Auto-Negotiation Next Page Transmit Register (ANNPTR)
+
+This register contains the next page information sent by this device to its Link Partner during
+Auto-Negotiation.
+
+#### Table 6-17. Auto-Negotiation Next Page Transmit Register (ANNPTR), address 0x07
+
+| Bit  | Bit Name | Default               | Description                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---- | -------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15   | NP       | 0, RW                 | **Next Page Indication:**0 = No other Next Page Transfer desired.1 = Another Next Page desired.                                                                                                                                                                                                                                                                                                                            |
+| 14   | RESERVED | 0, RO                 | **RESERVED:** Writes ignored, read as 0.                                                                                                                                                                                                                                                                                                                                                                                   |
+| 13   | MP       | 1, RW                 | **Message Page:**1 = Message Page.0 = Unformatted Page.                                                                                                                                                                                                                                                                                                                                                                    |
+| 12   | ACK2     | 0, RW                 | **Acknowledge2:**1 = Will comply with message.0 = Cannot comply with message.Acknowledge2 is used by the next page function to indicate that Local Device has the ability to comply with the message received.                                                                                                                                                                                                             |
+| 11   | TOG_TX   | 0, RO                 | Toggle:1 = Value of toggle bit in previously transmitted Link Code Word was 0.0 = Value of toggle bit in previously transmitted Link Code Word was 1.Toggle is used by the Arbitration function within Auto-Negotiation to ensure synchronization with the Link Partner during Next Page exchange. This bit shall always take the opposite value of the Toggle bit in the previously exchanged Link Code Word.                   |
+| 10:0 | CODE     | \<000 0000 0001\>, RW | This field represents the code field of the next page transmission. If the MP bit is set (bit 13 of this register), then the code shall be interpreted as a "Message Page", as defined in annex 28C of IEEE 802.3. Otherwise, the code shall be interpreted as an "Unformatted Page", and the interpretation is application specific.The default value of the CODE represents a Null Page as defined in Annex 28C of IEEE 802.3. |
+
+---
+
+## 6.6.1.2 Extended Registers
+
+### 6.6.1.2.1 PHY Status Register (PHYSTS)
+
+This register provides a single location within the register set for quick access to commonly
+accessed information.
+
+#### Table 6-18. PHY Status Register (PHYSTS), address 0x10
+
+| Bit | Bit Name                  | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --- | ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | RESERVED                  | 0, RO    | **RESERVED:** Write ignored, read as 0.                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 14  | MDI-X mode                | 0, RO    | **MDI-X mode as reported by the Auto-Negotiation logic:**This bit will be affected by the settings of the MDIX_EN and FORCE_MDIX bits in the PHYCR register. When MDIX is enabled, but not forced, this bit will update dynamically as the Auto-MDIX algorithm swaps between MDI and MDI-X configurations.1 = MDI pairs swapped (Receive on TPTD pair, Transmit on TPRD pair)0 = MDI pairs normal (Receive on TRD pair, Transmit on TPTD pair) |
+| 13  | Receive Error Latch       | 0, RO/LH | Receive Error Latch:This bit will be cleared upon a read of the RECR register.1 = Receive error event has occurred since last read of RXERCNT (address 0x15, Page 0).0 = No receive error event has occurred.                                                                                                                                                                                                                                        |
+| 12  | Polarity Status           | 0, RO    | **Polarity Status:**This bit is a duplication of bit 4 in the 10BTSCR register. This bit will be cleared upon a read of the 10BTSCR register, but not upon a read of the PHYSTS register.1 = Inverted Polarity detected.0 = Correct Polarity detected.                                                                                                                                                                                         |
+| 11  | False Carrier Sense Latch | 0, RO/LH | **False Carrier Sense Latch:**This bit will be cleared upon a read of the FCSR register.1 = False Carrier event has occurred since last read of FCSCR (address 0x14).0 = No False Carrier event has occurred.                                                                                                                                                                                                                                  |
+| 10  | Signal Detect             | 0, RO/LL | 100Base-TX unconditional Signal Detect from PMD.                                                                                                                                                                                                                                                                                                                                                                                                     |
+| 9   | Descrambler Lock          | 0, RO/LL | 100Base-TX Descrambler Lock from PMD.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 8   | Page Received             | 0, RO    | **Link Code Word Page Received:**This is a duplicate of the Page Received bit in the ANER register, but this bit will not be cleared upon a read of the PHYSTS register.1 = A new Link Code Word Page has been received. Cleared on read of the ANER (address 0x06, bit 1).0 = Link Code Word Page has not been received.                                                                                                                      |
+| 7   | RESERVED                  | 0, RO    | **RESERVED:** Writes ignored, read as 0.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 6   | Remote Fault              | 0, RO    | **Remote Fault:**1 = Remote Fault condition detected (cleared on read of BMSR (address 01h) register or by reset). Fault criteria: notification from Link Partner of Remote Fault through Auto-Negotiation.0 = No remote fault condition detected.                                                                                                                                                                                             |
+| 5   | Jabber Detect             | 0, RO    | **Jabber Detect:** This bit only has meaning in 10 Mb/s modeThis bit is a duplicate of the Jabber Detect bit in the BMSR register, except that it is not cleared upon a read of the PHYSTS register.1 = Jabber condition detected.0 = No Jabber.                                                                                                                                                                                               |
+| 4   | Auto-Neg Complete         | 0, RO    | **Auto-Negotiation Complete:**1 = Auto-Negotiation complete.0 = Auto-Negotiation not complete.                                                                                                                                                                                                                                                                                                                                                 |
+| 3   | Loopback Status           | 0, RO    | **Loopback:**1 = Loopback enabled.0 = Normal operation.                                                                                                                                                                                                                                                                                                                                                                                        |
+| 2   | Duplex Status             | 0, RO    | **Duplex:**This bit indicates duplex status and is determined from Auto-Negotiation or Forced Modes.1 = Full duplex mode.0 = Half duplex mode.Note: This bit is only valid if Auto-Negotiation is enabled and complete and there is a valid link or if Auto-Negotiation is disabled and there is a valid link.                                                                                                                                 |
+| 1   | Speed Status              | 0, RO    | **Speed10:**This bit indicates the status of the speed and is determined from Auto-Negotiation or Forced Modes.1 = 10 Mb/s mode.0 = 100 Mb/s mode.Note: This bit is only valid if Auto-Negotiation is enabled and complete and there is a valid link or if Auto-Negotiation is disabled and there is a valid link.                                                                                                                             |
+| 0   | Link Status               | 0, RO    | **Link Status:**This bit is a duplicate of the Link Status bit in the BMSR register, except that it will not be cleared upon a read of the PHYSTS register.1 = Valid link established (for either 10 or 100 Mb/s operation)0 = Link not established.                                                                                                                                                                                           |
+
+---
+
+### 6.6.1.2.2 False Carrier Sense Counter Register (FCSCR)
+
+This counter provides information required to implement the "False Carriers" attribute within the
+MAU managed object class of Clause 30 of the IEEE 802.3 specification.
+
+#### Table 6-19. False Carrier Sense Counter Register (FCSCR), address 0x14
+
+| Bit  | Bit Name    | Default     | Description                                                                                                                                                |
+| ---- | ----------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:8 | RESERVED    | 0, RO       | **RESERVED:** Writes ignored, Read as 0                                                                                                              |
+| 7:0  | FCSCNT[7:0] | 0, RO / COR | **False Carrier Event Counter:**This 8-bit counter increments on every false carrier event. This counter sticks when it reaches its max count (FFh). |
+
+---
+
+### 6.6.1.2.3 Receiver Error Counter Register (RECR)
+
+This counter provides information required to implement the "Symbol Error During Carrier" attribute
+within the PHY managed object class of Clause 30 of the IEEE 802.3 specification.
+
+#### Table 6-20. Receiver Error Counter Register (RECR), address 0x15
+
+| Bit  | Bit Name     | Default     | Description                                                                                                                                                                                                                                                                                                                                                       |
+| ---- | ------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:8 | RESERVED     | 0, RO       | **RESERVED:** Writes ignored, Read as 0                                                                                                                                                                                                                                                                                                                     |
+| 7:0  | RXERCNT[7:0] | 0, RO / COR | **RX_ER Counter:**When a valid carrier is present and there is at least one occurrence of an invalid data symbol, this 8-bit counter increments for each receive error detected. This event can increment only once per valid carrier event. If a collision is present, the attribute will not increment. The counter sticks when it reaches its max count. |
+
+---
+
+### 6.6.1.2.4 100 Mb/s PCS Configuration and Status Register (PCSR)
+
+#### Table 6-21. 100 Mb/s PCS Configuration and Status Register (PCSR), address 0x16
+
+| Bit   | Bit Name     | Default    | Description                                                                                                                                                                                                                            |
+| ----- | ------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:13 | RESERVED     | \<00\>, RO | **RESERVED:** Writes ignored, Read as 0.                                                                                                                                                                                         |
+| 12    | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+| 11    | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+| 10    | TQ_EN        | 0, RW      | **100Mbs True Quiet Mode Enable:**1 = Transmit True Quiet Mode.0 = Normal Transmit Mode.                                                                                                                                         |
+| 9     | SD FORCE PMA | 0, RW      | **Signal Detect Force PMA:**1 = Forces Signal Detection in PMA.0 = Normal SD operation.                                                                                                                                          |
+| 8     | SD_OPTION    | 1, RW      | **Signal Detect Option:**1 = Enhanced signal detect algorithm.0 = Reduced signal detect algorithm.                                                                                                                               |
+| 7     | DESC_TIME    | 0, RW      | **Descrambler Timeout:**Increase the descrambler timeout. When set this should allow the device to receive larger packets (>9k bytes) without loss of synchronization.1 = 2ms0 = 722us (per ANSI X3.263: 1995 (TP-PMD) 7.2.3.3e) |
+| 6     | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+| 5     | FORCE_100_OK | 0, RW      | **Force 100Mb/s Good Link:**1 = Forces 100Mb/s Good Link.0 = Normal 100Mb/s operation.                                                                                                                                           |
+| 4     | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+| 3     | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+| 2     | NRZI_BYPASS  | 0, RW      | **NRZI Bypass Enable:**1 = NRZI Bypass Enabled.0 = NRZI Bypass Disabled.                                                                                                                                                         |
+| 1     | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+| 0     | RESERVED     | 0          | **RESERVED:** Must be zero.                                                                                                                                                                                                      |
+
+---
+
+### 6.6.1.2.5 RMII and Bypass Register (RBR)
+
+This register configures the RMII Mode of operation. When RMII mode is disabled, the RMII
+functionality is bypassed.
+
+#### Table 6-22. RMII and Bypass Register (RBR), address 0x17
+
+| Bit  | Bit Name       | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---- | -------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15:6 | RESERVED       | 0, RO     | **RESERVED:** Writes ignored, Read as 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 5    | RMII_MODE      | Strap, RW | **Reduced MII Mode:**0 = Standard MII Mode1 = Reduced MII Mode                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 4    | RMII_REV1_0    | 0, RW     | **Reduce MII Revision 1.0:**0 = (RMII revision 1.2) CRS_DV will toggle at the end of a packet to indicate deassertion of CRS.1 = (RMII revision 1.0) CRS_DV will remain asserted until final data is transferred. CRS_DV will not toggle at the end of a packet.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| 3    | RX_OVF_STS     | 0, RO     | **RX FIFO Over Flow Status:**0 = Normal1 = Overflow detected                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 2    | RX_UNF_STS     | 0, RO     | **RX FIFO Under Flow Status:**0 = Normal1 = Underflow detected                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 1:0  | ELAST_BUF[1:0] | 1, RW     | **Receive Elasticity Buffer.** This field controls the Receive Elasticity Buffer which allows for frequency variation tolerance between the 50-MHz RMII clock and the recovered data. The following value indicate the tolerance in bits for a single packet. The minimum setting allows for standard Ethernet frame sizes at ±50 ppm accuracy for both RMII and Receive clocks. For greater frequency tolerance the packet lengths may be scaled (that is, for ±100 ppm, the packet lengths need to be divided by 2).00 = 14 bit tolerance (up to 16800 byte packets)01 = 2 bit tolerance (up to 2400 byte packets)10 = 6 bit tolerance (up to 7200 byte packets)11 = 10 bit tolerance (up to 12000 byte packets) |
+
+---
+
+### 6.6.1.2.6 LED Direct Control Register (LEDCR)
+
+This register provides the ability to directly control the LED outputs. It does not provide read
+access to the LEDs.
+
+#### Table 6-23. LED Direct Control Register (LEDCR), address 0x18
+
+| Bit             | Bit Name   | Default | Description                                                             |
+| --------------- | ---------- | ------- | ----------------------------------------------------------------------- |
+| 15:6            | RESERVED   | 0, RO   | **RESERVED:** Writes ignored, read as 0.                          |
+| 5<sup>(1)</sup> | DRV_SPDLED | 0, RW   | 1 = Drive value of SPDLED bit onto LED_SPEED output0 = Normal operation |
+| 4               | DRV_LNKLED | 0, RW   | 1 = Drive value of LNKLED bit onto LED_LINK output0 = Normal operation  |
+| 3               | RESERVED   | 0       | **RESERVED:** Must be zero.                                       |
+| 2<sup>(1)</sup> | SPDLED     | 0, RW   | Value to force on LED_SPEED output                                      |
+| 1               | LNKLED     | 0, RW   | Value to force on LED_LINK output                                       |
+| 0               | RESERVED   | 0       | **RESERVED:** Must be zero.                                       |
+
+**(1)** DP83848J/K only.
+
+---
+
+### 6.6.1.2.7 PHY Control Register (PHYCR)
+
+#### Table 6-24. PHY Control Register (PHYCR), address 0x19
+
+| Bit | Bit Name     | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --- | ------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | MDIX_EN      | Strap, RW | **Auto-MDIX Enable:**1 = Enable Auto-neg Auto-MDIX capability.0 = Disable Auto-neg Auto-MDIX capability.The Auto-MDIX algorithm requires that the Auto-Negotiation Enable bit in the BMCR register to be set. If Auto-Negotiation is not enabled, Auto-MDIX should be disabled as well.                                                                                                                                                                        |
+| 14  | FORCE_MDIX   | 0, RW     | **Force MDIX:**1 = Force MDI pairs to cross. (Receive on TPTD pair, Transmit on TPRD pair)0 = Normal operation.                                                                                                                                                                                                                                                                                                                                                |
+| 13  | PAUSE_RX     | 0, RO     | **Pause Receive Negotiated:**Indicates that pause receive should be enabled in the MAC. Based on ANAR[11:10] and ANLPAR[11:10] settings.This function shall be enabled according to IEEE 802.3 Annex 28B Table 28B-3, "Pause Resolution", only if the Auto-Negotiated Highest Common Denominator is a full duplex technology.                                                                                                                                  |
+| 12  | PAUSE_TX     | 0, RO     | **Pause Transmit Negotiated:**Indicates that pause transmit should be enabled in the MAC. Based on ANAR[11:10] and ANLPAR[11:10] settings.This function shall be enabled according to IEEE 802.3 Annex 28B Table 28B-3, "Pause Resolution", only if the Auto-Negotiated Highest Common Denominator is a full duplex technology.                                                                                                                                |
+| 11  | BIST_FE      | 0, RW/SC  | **BIST Force Error:**1 = Force BIST Error.0 = Normal operation.This bit forces a single error, and is self clearing.                                                                                                                                                                                                                                                                                                                                           |
+| 10  | PSR_15       | 0, RW     | **BIST Sequence select:**1 = PSR15 selected.0 = PSR9 selected.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 9   | BIST_STATUS  | 0, LL/RO  | **BIST Test Status:**1 = BIST pass.0 = BIST fail. Latched, cleared when BIST is stopped.For a count number of BIST errors, see the BIST Error Count in the CDCTRL1 register.                                                                                                                                                                                                                                                                                   |
+| 8   | BIST_START   | 0, RW     | **BIST Start:**1 = BIST start.0 = BIST stop.                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 7   | BP_STRETCH   | 0, RW     | Bypass LED Stretching:This will bypass the LED stretching and the LEDs will reflect the internal value.1 = Bypass LED stretching.0 = Normal operation.                                                                                                                                                                                                                                                                                                               |
+| 6   | RESERVED     | 0         | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 5   | LED_CNFG[0]  | Strap, RW | **LED Configuration**&nbsp;&nbsp;&nbsp;&nbsp;**LED_CNFG[0]** — **Mode Description**&nbsp;&nbsp;&nbsp;&nbsp;1 — Mode 1&nbsp;&nbsp;&nbsp;&nbsp;0 — Mode2In **Mode 1**, LEDs are configured as follows: LED_LINK = ON for Good Link, OFF for No Link; LED_SPEED = ON in 100Mb/s, OFF in 10Mb/sIn **Mode 2**, LEDs are configured as follows: LED_LINK = ON for good Link, BLINK for Activity; LED_SPEED = ON in 100Mb/s, OFF in 10Mb/s |
+| 4:0 | PHYADDR[4:0] | Strap, RW | **PHY Address:** PHY address for port.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+---
+
+### 6.6.1.2.8 10BASE-T Status/Control Register (10BTSCR)
+
+#### Table 6-25. 10BASE-T Status/Control Register (10BTSCR), address 0x1A
+
+| Bit   | Bit Name        | Default | Description                                                                                                                                                                                                                                                                                                                                                          |
+| ----- | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15    | RESERVED        | 0, RW   | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                                    |
+| 14:12 | RESERVED        | 0, RW   | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                                    |
+| 11:9  | SQUELCH         | 100, RW | **Squelch Configuration:**Used to set the Squelch 'ON' threshold for the receiver.Default Squelch ON is 330-mV peak.                                                                                                                                                                                                                                           |
+| 8     | LOOPBACK_10_DIS | 0, RW   | In half-duplex mode, default 10BASE-T operation loops Transmit data to the Receive data in addition to transmitting the data on the physical medium. This is for consistency with earlier 10BASE2 and 10BASE5 implementations which used a shared medium. Setting this bit disables the loopback function.This bit does not affect loopback due to setting BMCR[14]. |
+| 7     | LP_DIS          | 0, RW   | **Normal Link Pulse Disable:**1 = Transmission of NLPs is disabled.0 = Transmission of NLPs is enabled.                                                                                                                                                                                                                                                        |
+| 6     | FORCE_LINK_10   | 0, RW   | **Force 10Mb Good Link:**1 = Forced Good 10 Mb Link.0 = Normal Link Status.                                                                                                                                                                                                                                                                                    |
+| 5     | RESERVED        | 0, RW   | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                                    |
+| 4     | POLARITY        | RO/LH   | **10Mb Polarity Status:**This bit is a duplication of bit 12 in the PHYSTS register. Both bits will be cleared upon a read of 10BTSCR register, but not upon a read of the PHYSTS register.1 = Inverted Polarity detected.0 = Correct Polarity detected.                                                                                                       |
+| 3     | RESERVED        | 0, RW   | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                                    |
+| 2     | RESERVED        | 1, RW   | **RESERVED:** Must be set to one.                                                                                                                                                                                                                                                                                                                              |
+| 1     | HEARTBEAT_DIS   | 0, RW   | **Heartbeat Disable:** This bit only has influence in half-duplex 10Mb mode.1 = Heartbeat function disabled.0 = Heartbeat function enabled.**When the device is operating at 100 Mb or configured for full duplex operation, this bit will be ignored - the heartbeat function is disabled.**                                                            |
+| 0     | JABBER_DIS      | 0, RW   | **Jabber Disable:**Applicable only in 10BASE-T.1 = Jabber function disabled.0 = Jabber function enabled.                                                                                                                                                                                                                                                       |
+
+---
+
+### 6.6.1.2.9 CD Test and BIST Extensions Register (CDCTRL1)
+
+#### Table 6-26. CD Test and BIST Extensions Register (CDCTRL1), address 0x1B
+
+| Bit  | Bit Name         | Default | Description                                                                                                                                                                                                                                                                                                                                                  |
+| ---- | ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 15:8 | BIST_ERROR_COUNT | 0, RO   | **BIST ERROR Counter:**Counts number of errored data nibbles during Packet BIST. This value will reset when Packet BIST is restarted. The counter sticks when it reaches its max count.                                                                                                                                                                |
+| 7:6  | RESERVED         | 0, RW   | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                            |
+| 5    | BIST_CONT_MODE   | 0, RW   | **Packet BIST Continuous Mode:**Allows continuous pseudo random data transmission without any break in transmission. This can be used for transmit VOD testing. This is used in conjunction with the BIST controls in the PHYCR Register (0x19h). For 10 Mb operation, jabber function must be disabled, bit 0 of the 10BTSCR (0x1Ah), JABBER_DIS = 1. |
+| 4    | CDPATTEN_10      | 0, RW   | **CD Pattern Enable for 10Mb:**1 = Enabled.0 = Disabled.                                                                                                                                                                                                                                                                                               |
+| 3    | RESERVED         | 0, RW   | **RESERVED:** Must be zero.                                                                                                                                                                                                                                                                                                                            |
+| 2    | 10MEG_PATT_GAP   | 0, RW   | **Defines gap between data or NLP test sequences:**1 = 15 µs.0 = 10 µs.                                                                                                                                                                                                                                                                              |
+| 1:0  | CDPATTSEL[1:0]   | 00, RW  | **CD Pattern Select[1:0]:**If CDPATTEN_10 = 1:00 = Data, EOP0 sequence01 = Data, EOP1 sequence10 = NLPs11 = Constant Manchester 1 s (10-MHz sine wave) for harmonic distortion testing.                                                                                                                                                                |
+
+---
+
+### 6.6.1.2.10 Energy Detect Control (EDCR)
+
+#### Table 6-27. Energy Detect Control (EDCR), address 0x1D
+
+| Bit | Bit Name      | Default   | Description                                                                                                                                                                                                                                                                                                |
+| --- | ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | ED_EN         | 0, RW     | **Energy Detect Enable:**Allow Energy Detect Mode.When Energy Detect is enabled and Auto-Negotiation is disabled through the BMCR register, Auto-MDIX should be disabled through the PHYCR register.                                                                                                 |
+| 14  | ED_AUTO_UP    | 1, RW     | **Energy Detect Automatic Power Up:**Automatically begin power-up sequence when Energy Detect Data Threshold value (EDCR[3:0]) is reached. Alternatively, device could be powered up manually using the ED_MAN bit (ECDR[12]).                                                                       |
+| 13  | ED_AUTO_DOWN  | 1, RW     | **Energy Detect Automatic Power Down:**Automatically begin power-down sequence when no energy is detected. Alternatively, device could be powered down using the ED_MAN bit (EDCR[12]).                                                                                                              |
+| 12  | ED_MAN        | 0, RW/SC  | **Energy Detect Manual Power Up/Down:**Begin power-up/down sequence when this bit is asserted. When set, the Energy Detect algorithm will initiate a change of Energy Detect state regardless of threshold (error or data) and timer values.                                                         |
+| 11  | ED_BURST_DIS  | 0, RW     | **Energy Detect Bust Disable:**Disable bursting of energy detect data pulses. By default, Energy Detect (ED) transmits a burst of 4 ED data pulses each time the CD is powered up. When bursting is disabled, only a single ED data pulse will be send each time the CD is powered up.               |
+| 10  | ED_PWR_STATE  | 0, RO     | **Energy Detect Power State:**Indicates current Energy Detect Power state. When set, Energy Detect is in the powered up state. When cleared, Energy Detect is in the powered down state. This bit is invalid when Energy Detect is not enabled.                                                      |
+| 9   | ED_ERR_MET    | 0, RO/COR | **Energy Detect Error Threshold Met:**No action is automatically taken upon receipt of error events. This bit is informational only and would be cleared on a read.                                                                                                                                  |
+| 8   | ED_DATA_MET   | 0, RO/COR | **Energy Detect Data Threshold Met:**The number of data events that occurred met or surpassed the Energy Detect Data Threshold. This bit is cleared on a read.                                                                                                                                       |
+| 7:4 | ED_ERR_COUNT  | 0001, RW  | **Energy Detect Error Threshold:**Threshold to determine the number of energy detect error events that should cause the device to take action. Intended to allow averaging of noise that may be on the line. Counter will reset after approximately 2 seconds without any energy detect data events. |
+| 3:0 | ED_DATA_COUNT | 0001, RW  | **Energy Detect Data Threshold:**Threshold to determine the number of energy detect events that should cause the device to take actions. Intended to allow averaging of noise that may be on the line. Counter will reset after approximately 2 seconds without any energy detect data events.       |
+
+---
+
+*DP83848H, DP83848J, DP83848K, DP83848M, DP83848T — SNLS250E – MAY 2008 – REVISED APRIL 2015,
+pages 48–63. Copyright © 2008–2015, Texas Instruments Incorporated.*

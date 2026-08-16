@@ -648,6 +648,7 @@
       <itemPath>../src/http_net_print.h</itemPath>
       <itemPath>../src/app.h</itemPath>
       <itemPath>../src/console.h</itemPath>
+      <itemPath>../src/ethernet.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -1051,6 +1052,7 @@
       <itemPath>../src/http_net_print.c</itemPath>
       <itemPath>../src/app.c</itemPath>
       <itemPath>../src/console.c</itemPath>
+      <itemPath>../src/ethernet.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
@@ -1177,7 +1179,7 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="512"/>
+        <property key="heap-size" value="49152"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
         <property key="kseg-origin" value=""/>

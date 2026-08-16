@@ -46,6 +46,7 @@
 #include "configuration.h"
 #include "definitions.h"
 #include "device.h"
+#include <stdint.h>
 
 
 // ****************************************************************************
@@ -82,13 +83,16 @@
 #pragma config UPLLIDIV =   DIV_2
 
 /*** DEVCFG3 ***/
-#pragma config FSRSSEL =    PRIORITY_7
-#pragma config FVBUSONIO =  ON
-#pragma config USERID =     0xffff
-#pragma config FUSBIDIO =   ON
-#pragma config FMIIEN =     ON
-#pragma config FETHIO =     OFF
-#pragma config FCANIO =     ON
+/* The FMIIEN pragma is broken in XC32 v5.10 / PIC32MX_DFP 1.6.369 — it
+   only controls bit 0 (USERID) instead of bit 24 (FMIIEN).  We need
+   FMIIEN=0 (RMII mode) for the DP83848 PHY on the PIC32 Ethernet
+   Starter Kit.  Write the entire config word directly.
+   Bit layout: USERID[15:0], FSRSSEL[18:16], [23:19]=1,
+   FMIIEN[24]=0(RMII), FETHIO[25]=1(default), FCANIO[26]=1,
+   [29:27]=1, FUSBIDIO[30]=1, FVBUSONIO[31]=1
+   => 0xFEFFFFFE (USERID=0xFFFE, FSRSSEL=7, FMIIEN=0, rest=1) */
+__attribute__((section(".config_BFC02FF0"), used))
+const uint32_t __DEVCFG3_manual = 0xFEFFFFFE;
 
 
 
@@ -373,7 +377,6 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
     {TCPIP_MODULE_DNS_SERVER,       &tcpipDNSServerInitData},       // TCPIP_MODULE_DNS_SERVER
 
     {TCPIP_MODULE_BERKELEY,         &tcpipBerkeleyInitData},        // TCPIP_MODULE_BERKELEY
-    {TCPIP_MODULE_HTTP_NET_SERVER,  &tcpipHTTPNetInitData},         // TCPIP_MODULE_HTTP_NET_SERVER
     { TCPIP_MODULE_MANAGER,         &tcpipHeapConfig },             // TCPIP_MODULE_MANAGER
 
 // MAC modules
@@ -654,9 +657,13 @@ void SYS_Initialize ( void* data )
     sysObj.drvUSBFSObject = DRV_USBFS_Initialize(DRV_USBFS_INDEX_0, (SYS_MODULE_INIT *) &drvUSBFSInit);    
 
 
-   /* TCPIP Stack Initialization */
-   sysObj.tcpip = TCPIP_STACK_Init();
-   SYS_ASSERT(sysObj.tcpip != SYS_MODULE_OBJ_INVALID, "TCPIP_STACK_Init Failed" );
+   /* TCPIP Stack Initialization is deferred to Ethernet_Tasks() in
+      ethernet.c. The TCPIP stack init needs the MIIM driver task to be
+      running (to process PHY register reads/writes), but the MIIM task
+      is normally a FreeRTOS task. Since we run bare-metal, we must pump
+      the MIIM driver task BEFORE calling TCPIP_STACK_Init(). This is
+      done in Ethernet_Initialize() / Ethernet_Tasks(). */
+   sysObj.tcpip = SYS_MODULE_OBJ_INVALID;
 
 
     CRYPT_WCCB_Initialize();

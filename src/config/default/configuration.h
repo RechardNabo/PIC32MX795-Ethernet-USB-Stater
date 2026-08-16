@@ -188,7 +188,7 @@ extern "C" {
 
 
 /*** HTTP NET Configuration ***/
-#define TCPIP_STACK_USE_HTTP_NET_SERVER
+/* #define TCPIP_STACK_USE_HTTP_NET_SERVER */
 #define TCPIP_HTTP_NET_MAX_HEADER_LEN		    		15
 #define TCPIP_HTTP_NET_CACHE_LEN		        		"600"
 #define TCPIP_HTTP_NET_TIMEOUT		            		45
@@ -369,10 +369,10 @@ extern "C" {
 #define TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX0              "MCHPBOARD_E"
 #define TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0               0
 
-#define TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0         "192.168.100.10"
+#define TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0         "192.168.0.151"
 #define TCPIP_NETWORK_DEFAULT_IP_MASK_IDX0            "255.255.255.0"
-#define TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0            "192.168.100.1"
-#define TCPIP_NETWORK_DEFAULT_DNS_IDX0                "192.168.100.1"
+#define TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0            "192.168.0.1"
+#define TCPIP_NETWORK_DEFAULT_DNS_IDX0                "192.168.0.1"
 #define TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX0         "0.0.0.0"
 #define TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX0         "full"
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX0            \
@@ -393,8 +393,13 @@ extern "C" {
 /* Maximum USB driver instances */
 #define DRV_USBFS_INSTANCES_NUMBER                        1U
 
-/* Interrupt mode enabled */
-#define DRV_USBFS_INTERRUPT_MODE                          true
+/* Polling mode — no USB ISR needed (bare-metal main loop without FreeRTOS scheduler).
+   MCC default is true (interrupt mode). Changed to false because the MCC-generated
+   ISR wrappers in interrupts_a.S use FreeRTOS portSAVE_CONTEXT/portRESTORE_CONTEXT
+   macros that require vTaskStartScheduler() to have been called. In bare-metal mode,
+   DRV_USBFS_Tasks() must be called frequently in the main loop to poll USB events.
+   If MCC regenerates this file, change this back to false. */
+#define DRV_USBFS_INTERRUPT_MODE                          false
 
 
 /* Enables Device Support */
@@ -578,7 +583,7 @@ extern "C" {
                                                     )
                                                     
 #define DRV_DP83848_PHY_LINK_INIT_DELAY            500
-#define DRV_DP83848_PHY_ADDRESS                    0
+#define DRV_DP83848_PHY_ADDRESS                    1
 #define DRV_DP83848_PHY_PERIPHERAL_ID              _ETH_BASE_ADDRESS
 #define DRV_ETHPHY_DP83848_NEG_INIT_TMO            1
 #define DRV_ETHPHY_DP83848_NEG_DONE_TMO            2000

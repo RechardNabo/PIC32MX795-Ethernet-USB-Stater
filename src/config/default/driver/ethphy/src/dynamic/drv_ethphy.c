@@ -51,6 +51,9 @@ Microchip or any third party.
 #include "driver/ethphy/src/drv_ethphy_local.h"
 #include "system/sys_time_h2_adapter.h"
 #include "system/debug/sys_debug.h"
+#include <stdio.h>
+
+extern void Console_Println(const char *msg);
 // *****************************************************************************
 // *****************************************************************************
 // Section: File Scope Variables
@@ -2444,6 +2447,21 @@ static void F_ETHPHY_NegCompletePhaseAN_Complete(DRV_ETHPHY_CLIENT_OBJ * hClient
 
     phyStat.w = hClientObj->smiData;
 
+    {
+        static int dbgCount = 0;
+        if (dbgCount < 5)
+        {
+            char dbgBuf[64];
+            (void)snprintf(dbgBuf, sizeof(dbgBuf),
+                           "[PHY] AN_Complete: BMSTAT=0x%04x AN_C=%u LINK=%u",
+                           (unsigned)phyStat.w,
+                           (unsigned)phyStat.AN_COMPLETE,
+                           (unsigned)phyStat.LINK_STAT);
+            Console_Println(dbgBuf);
+            dbgCount++;
+        }
+    }
+
     if(phyStat.AN_COMPLETE == 0U)
     {   // not done yet
         if(SYS_TMR_TickCountGet() < hClientObj->operTStamp)
@@ -2452,11 +2470,13 @@ static void F_ETHPHY_NegCompletePhaseAN_Complete(DRV_ETHPHY_CLIENT_OBJ * hClient
         }
         else
         {   // timeout
+            Console_Println("[PHY] AN timeout!");
             F_ETHPHY_SetOperDoneResult(hClientObj, DRV_ETHPHY_RES_NEGOTIATION_ACTIVE);
         }
     }
     else
     {
+        Console_Println("[PHY] AN complete, getting result");
         phyBMCon.w = hClientObj->operReg[1];   // restore BMCON read
         F_DRV_PHY_NegCompleteSetOperResult(hClientObj, phyBMCon.w, phyStat.w);
     }

@@ -99,12 +99,12 @@ static const USB_DEVICE_DESCRIPTOR usbDeviceDescriptor =
 
 
     USB_DEVICE_EP0_BUFFER_SIZE,                             // Max packet size for EP0, see configuration.h
-    0x04D8,                                                 // Vendor ID
-    0x0000,                                                 // Product ID
+    0x04D8,                                                 // Vendor ID (Microchip)
+    0x000A,                                                 // Product ID (CDC virtual COM port)
     0x0100,                                                 // Device release number in BCD format
     0x01,                                                   // Manufacturer string index
     0x02,                                                   // Product string index
-    0x00,                                                   // Device serial number string index
+    0x03,                                                   // Device serial number string index
     0x01                                                    // Number of possible configurations
 };
 
@@ -265,17 +265,35 @@ static sd002 =
 {
     (uint8_t)sizeof(sd002),
     USB_DESCRIPTOR_STRING,
-    {'E','n','t','e','r',' ','P','r','o','d','u','c','t',' ','s','t','r','i','n','g',' ','h','e','r','e'}
+    {'P','I','C','3','2',' ','C','D','C',' ','C','o','n','s','o','l','e'}
+};
+
+/*******************************************
+ *  Serial Number string descriptor
+ *******************************************/
+const struct
+{
+    uint8_t bLength;                                    // Size of this descriptor in bytes
+    uint8_t bDscType;                                   // STRING descriptor type
+    uint16_t string[12];                                // String
+}
+
+static sd003 =
+{
+    (uint8_t)sizeof(sd003),
+    USB_DESCRIPTOR_STRING,
+    {'0','0','0','1','0','0','0','0','0','0','0','1'}
 };
 
 /***************************************
  * Array of string descriptors
  ***************************************/
-static USB_DEVICE_STRING_DESCRIPTORS_TABLE stringDescriptors[3]=
+static USB_DEVICE_STRING_DESCRIPTORS_TABLE stringDescriptors[4]=
 {
     (const uint8_t *const)&sd000,
     (const uint8_t *const)&sd001,
     (const uint8_t *const)&sd002,
+    (const uint8_t *const)&sd003,
 };
 
 /*******************************************
@@ -289,7 +307,7 @@ static const USB_DEVICE_MASTER_DESCRIPTOR usbMasterDescriptor =
     NULL,
     0,
     NULL,
-    3,                                                      // Total number of string descriptors available.
+    4,                                                      // Total number of string descriptors available.
     stringDescriptors,                                      // Pointer to array of string descriptors.
     NULL,
     NULL

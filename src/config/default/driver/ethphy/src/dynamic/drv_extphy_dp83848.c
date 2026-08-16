@@ -338,7 +338,7 @@ static DRV_ETHPHY_RESULT DRV_EXTPHY_MDIXConfigure(const DRV_ETHPHY_OBJECT_BASE* 
  *****************************************************************************/
 static unsigned int DRV_EXTPHY_SMIClockGet(const DRV_ETHPHY_OBJECT_BASE* pBaseObj, DRV_HANDLE handle)
 {
-     return 25000000;        //  25 MHz max clock supported
+     return 2500000;        //  2.5 MHz max clock — safe for DP83848 on PIC32 ETH Starter Kit
 }
 
 // the DRV_ETHPHY_OBJECT

@@ -38,6 +38,7 @@ static ConsoleState g_consoleState    = CONSOLE_STATE_INIT;
 static USB_DEVICE_HANDLE g_usbHandle  = USB_DEVICE_HANDLE_INVALID;
 static bool g_usbConfigured           = false;
 static bool g_cdcEventHandlerSet      = false;
+static bool g_dtrActive               = false;  /* Host COM port open */
 
 /* USB CDC transfer handles */
 static USB_DEVICE_CDC_TRANSFER_HANDLE g_writeHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
@@ -61,6 +62,17 @@ static uint32_t g_rxCount = 0;  /* Bytes in buffer              */
 /* CDC read scratch buffer (USB reads into this, then we copy to ring) */
 static char g_cdcReadBuf[64];
 
+/* CDC line coding — the host queries this via GET_LINE_CODING and sets it
+   via SET_LINE_CODING. CDC ignores baud rate (USB is always full-speed),
+   but the host expects a valid response. Default: 115200 8N1. */
+static USB_CDC_LINE_CODING g_lineCoding =
+{
+    115200,                                 /* dwDTERate (baud rate) */
+    USB_CDC_LINE_CODING_STOP_1_BIT,         /* bCharFormat (1 stop bit) */
+    USB_CDC_LINE_CODING_PARITY_NONE,        /* bParityType (no parity) */
+    USB_CDC_LINE_CODING_DATA_8_BIT          /* bDataBits (8 data bits) */
+};
+
 /* --------------------------------------------------------------------------
    USB Device Event Handler
    --------------------------------------------------------------------------
@@ -69,7 +81,7 @@ static char g_cdcReadBuf[64];
    the virtual COM port.
    -------------------------------------------------------------------------- */
 static void Console_USBDeviceEventHandler(USB_DEVICE_EVENT event,
-                                          USB_DEVICE_EVENT_DATA *eventData,
+                                          void *eventData,
                                           uintptr_t context)
 {
     (void)context;
@@ -83,6 +95,25 @@ static void Console_USBDeviceEventHandler(USB_DEVICE_EVENT event,
 
         case USB_DEVICE_EVENT_DECONFIGURED:
             g_usbConfigured = false;
+            g_dtrActive = false;
+            g_writePending = false;
+            g_readPending = false;
+            g_writeHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
+            g_readHandle  = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
+            break;
+
+        case USB_DEVICE_EVENT_POWER_DETECTED:
+            /* VBUS detected — attach the device to the USB bus by enabling
+               the D+ pull-up resistor. Without this, the host never sees
+               the device and enumeration never begins. */
+            USB_DEVICE_Attach(g_usbHandle);
+            break;
+
+        case USB_DEVICE_EVENT_POWER_REMOVED:
+            /* VBUS removed — detach from the bus */
+            USB_DEVICE_Detach(g_usbHandle);
+            g_usbConfigured = false;
+            g_dtrActive = false;
             g_writePending = false;
             g_readPending = false;
             g_writeHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
@@ -91,8 +122,6 @@ static void Console_USBDeviceEventHandler(USB_DEVICE_EVENT event,
 
         case USB_DEVICE_EVENT_SUSPENDED:
         case USB_DEVICE_EVENT_RESUMED:
-        case USB_DEVICE_EVENT_POWER_DETECTED:
-        case USB_DEVICE_EVENT_POWER_REMOVED:
         default:
             /* Not handled — bus events only */
             break;
@@ -121,7 +150,7 @@ static USB_DEVICE_CDC_EVENT_RESPONSE Console_CDCEventHandler(
             USB_DEVICE_CDC_EVENT_DATA_WRITE_COMPLETE *writeData =
                 (USB_DEVICE_CDC_EVENT_DATA_WRITE_COMPLETE *)eventData;
 
-            if (writeData->transferHandle == g_writeHandle)
+            if (writeData->handle == g_writeHandle)
             {
                 g_writePending = false;
                 g_writeHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
@@ -134,10 +163,10 @@ static USB_DEVICE_CDC_EVENT_RESPONSE Console_CDCEventHandler(
             USB_DEVICE_CDC_EVENT_DATA_READ_COMPLETE *readData =
                 (USB_DEVICE_CDC_EVENT_DATA_READ_COMPLETE *)eventData;
 
-            if (readData->transferHandle == g_readHandle)
+            if (readData->handle == g_readHandle)
             {
                 /* Copy received bytes into the RX ring buffer */
-                uint32_t bytesRead = readData->size;
+                uint32_t bytesRead = (uint32_t)readData->length;
                 uint32_t i;
                 for (i = 0; i < bytesRead; i++)
                 {
@@ -155,14 +184,59 @@ static USB_DEVICE_CDC_EVENT_RESPONSE Console_CDCEventHandler(
         }
 
         case USB_DEVICE_CDC_EVENT_SET_CONTROL_LINE_STATE:
-            /* Host opened the COM port (DTR/RTS set) — nothing to do */
+            /* Host opened/closed the COM port (DTR/RTS changed).
+               Must acknowledge the control transfer with STATUS OK,
+               otherwise usbser.sys fails to start and no COM port symlink
+               is created. */
+            USB_DEVICE_ControlStatus(g_usbHandle,
+                                     USB_DEVICE_CONTROL_STATUS_OK);
+            /* Track DTR state — when DTR is active, the host has the
+               COM port open. This lets us detect open/close events. */
+            {
+                USB_CDC_CONTROL_LINE_STATE *controlLineState =
+                    (USB_CDC_CONTROL_LINE_STATE *)eventData;
+                if (controlLineState != NULL)
+                {
+                    g_dtrActive = (controlLineState->dtr != 0U);
+                }
+            }
             break;
 
         case USB_DEVICE_CDC_EVENT_GET_LINE_CODING:
+            /* Host wants to read the line coding (baud, parity, stop bits).
+               Must send the line coding data back via ControlSend.
+               If we don't respond, the control transfer hangs and
+               usbser.sys fails to start. */
+            USB_DEVICE_ControlSend(g_usbHandle,
+                                   &g_lineCoding,
+                                   sizeof(USB_CDC_LINE_CODING));
+            break;
+
         case USB_DEVICE_CDC_EVENT_SET_LINE_CODING:
+            /* Host wants to set the line coding. Must receive the data
+               via ControlReceive, then acknowledge. If we don't respond,
+               the control transfer hangs and usbser.sys fails to start. */
+            USB_DEVICE_ControlReceive(g_usbHandle,
+                                      &g_lineCoding,
+                                      sizeof(USB_CDC_LINE_CODING));
+            break;
+
         case USB_DEVICE_CDC_EVENT_SEND_BREAK:
-        case USB_DEVICE_CDC_EVENT_CONTROL_TRANSFER_DATA_SENT:
+            /* Host sent a break — acknowledge with OK */
+            USB_DEVICE_ControlStatus(g_usbHandle,
+                                     USB_DEVICE_CONTROL_STATUS_OK);
+            break;
+
         case USB_DEVICE_CDC_EVENT_CONTROL_TRANSFER_DATA_RECEIVED:
+            /* Data stage of a host-to-device control transfer is complete
+               (e.g., SET_LINE_CODING). The device layer does NOT automatically
+               send the status ZLP — the application must do it. Without this,
+               the control transfer hangs and usbser.sys times out (60s). */
+            USB_DEVICE_ControlStatus(g_usbHandle,
+                                     USB_DEVICE_CONTROL_STATUS_OK);
+            break;
+
+        case USB_DEVICE_CDC_EVENT_CONTROL_TRANSFER_DATA_SENT:
         case USB_DEVICE_CDC_EVENT_CONTROL_TRANSFER_ABORTED:
         case USB_DEVICE_CDC_EVENT_SERIAL_STATE_NOTIFICATION_COMPLETE:
         default:
@@ -198,6 +272,7 @@ void Console_Initialize(void)
     g_consoleState    = CONSOLE_STATE_INIT;
     g_usbConfigured   = false;
     g_cdcEventHandlerSet = false;
+    g_dtrActive       = false;
     g_writePending    = false;
     g_readPending     = false;
     g_writeHandle     = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
@@ -216,19 +291,30 @@ void Console_Tasks(void)
     {
         case CONSOLE_STATE_INIT:
         {
-            /* Open the USB device layer */
-            g_usbHandle = USB_DEVICE_Open(USB_DEVICE_INDEX_0);
+            /* Open the USB device layer.
+               This may fail on the first few calls because the USB device
+               layer needs USB_DEVICE_Tasks() to be called multiple times
+               before it transitions from OPENING_USBCD to READY state.
+               Just keep retrying until it succeeds. */
+            g_usbHandle = USB_DEVICE_Open(USB_DEVICE_INDEX_0,
+                                          DRV_IO_INTENT_READWRITE);
             if (g_usbHandle != USB_DEVICE_HANDLE_INVALID)
             {
-                /* Register USB device event handler */
+                /* Register USB device event handler.
+                   This also enables the USB interrupt source via
+                   DRV_USBFS_ClientEventCallBackSet(). */
                 USB_DEVICE_EventHandlerSet(g_usbHandle,
                                            Console_USBDeviceEventHandler, 0);
+
+                /* Attach to the USB bus (enable D+ pull-up).
+                   The POWER_DETECTED event handler also calls this, but
+                   VBUS may already be present before we register the handler,
+                   so we call it here too to avoid missing the attach window. */
+                USB_DEVICE_Attach(g_usbHandle);
+
                 g_consoleState = CONSOLE_STATE_OPEN_DEVICE;
             }
-            else
-            {
-                g_consoleState = CONSOLE_STATE_ERROR;
-            }
+            /* else: stay in INIT and retry on next Console_Tasks() call */
             break;
         }
 
@@ -302,15 +388,12 @@ void Console_Tasks(void)
                     g_txCount--;
                 }
 
-                USB_DEVICE_CDC_TRANSFER_FLAGS flags;
-                flags.value = 0;
-
                 USB_DEVICE_CDC_RESULT result =
                     USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
                                          &g_writeHandle,
                                          txScratch,
                                          bytesToSend,
-                                         flags);
+                                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
                 if (result == USB_DEVICE_CDC_RESULT_OK)
                 {
                     g_writePending = true;
@@ -349,7 +432,10 @@ void Console_Tasks(void)
 
 bool Console_IsConnected(void)
 {
-    return (g_consoleState == CONSOLE_STATE_READY && g_usbConfigured);
+    /* True when USB is configured AND the host has the COM port open
+       (DTR active). This lets us detect when the host actually opens
+       and closes the terminal, so we can re-send welcome messages. */
+    return (g_consoleState == CONSOLE_STATE_READY && g_usbConfigured && g_dtrActive);
 }
 
 uint32_t Console_Print(const char *str)
