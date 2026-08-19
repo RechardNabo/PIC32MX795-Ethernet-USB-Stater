@@ -59,6 +59,12 @@ static uint32_t g_rxHead = 0;   /* Next byte to read out        */
 static uint32_t g_rxTail = 0;   /* Next byte to store into      */
 static uint32_t g_rxCount = 0;  /* Bytes in buffer              */
 
+/* Rolling mirror of the most recent console output — see
+   Console_MirrorCopy() / CONSOLE_MIRROR_SIZE in console.h. */
+static char     g_mirrorBuf[CONSOLE_MIRROR_SIZE];
+static uint32_t g_mirrorHead  = 0;  /* next write position (circular) */
+static uint32_t g_mirrorCount = 0;  /* valid bytes so far, caps at SIZE */
+
 /* CDC read scratch buffer (USB reads into this, then we copy to ring) */
 static char g_cdcReadBuf[64];
 
@@ -250,11 +256,27 @@ static USB_DEVICE_CDC_EVENT_RESPONSE Console_CDCEventHandler(
 /* --------------------------------------------------------------------------
    Ring buffer helpers
    -------------------------------------------------------------------------- */
+static void Console_MirrorPut(char c)
+{
+    g_mirrorBuf[g_mirrorHead] = c;
+    g_mirrorHead = (g_mirrorHead + 1U) % CONSOLE_MIRROR_SIZE;
+    if (g_mirrorCount < CONSOLE_MIRROR_SIZE)
+    {
+        g_mirrorCount++;
+    }
+}
+
 static void Console_TxEnqueue(const char *data, uint32_t len)
 {
     uint32_t i;
     for (i = 0; i < len; i++)
     {
+        /* Mirror every byte that's meant to reach the terminal, regardless
+           of whether the TX ring itself is full — the web dashboard's
+           view of "what the console has shown" shouldn't depend on USB
+           drain timing. */
+        Console_MirrorPut(data[i]);
+
         if (g_txCount < CONSOLE_TX_BUFFER_SIZE)
         {
             g_txBuffer[g_txTail] = data[i];
@@ -283,6 +305,8 @@ void Console_Initialize(void)
     g_rxHead = 0;
     g_rxTail = 0;
     g_rxCount = 0;
+    g_mirrorHead  = 0;
+    g_mirrorCount = 0;
 }
 
 void Console_Tasks(void)
@@ -469,6 +493,28 @@ uint32_t Console_Println(const char *str)
     uint32_t sent = Console_Print(str);
     Console_TxEnqueue("\r\n", 2);
     return sent + 2;
+}
+
+uint32_t Console_MirrorCopy(char *dest, uint32_t destSize)
+{
+    if ((dest == NULL) || (destSize == 0U))
+    {
+        return 0U;
+    }
+
+    uint32_t n = (g_mirrorCount < destSize) ? g_mirrorCount : destSize;
+
+    /* Only the newest n bytes are wanted (the tail), even if the mirror
+       holds more than that — start reading n bytes back from the write
+       head. */
+    uint32_t start = (g_mirrorHead + CONSOLE_MIRROR_SIZE - n) % CONSOLE_MIRROR_SIZE;
+
+    for (uint32_t i = 0; i < n; i++)
+    {
+        dest[i] = g_mirrorBuf[(start + i) % CONSOLE_MIRROR_SIZE];
+    }
+
+    return n;
 }
 
 uint32_t Console_Read(char *buf, uint32_t bufSize)

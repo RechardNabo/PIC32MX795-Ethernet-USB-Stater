@@ -36,4 +36,43 @@ void Main_CycleLedMode(void);
 /* Advance to the next LED speed setting (same as pressing SW2). */
 void Main_CycleSpeed(void);
 
+/* --------------------------------------------------------------------------
+   Resource-monitoring accessors (for the web dashboard's "MCU Resources"
+   tab). All are cheap, dependency-free reads of state already tracked in
+   main.c's loop.
+   -------------------------------------------------------------------------- */
+
+/* Bytes of static RAM (.data + .bss) used, as of the last build's linker
+   map. Not computed live: this build uses -fdata-sections, which places
+   the linker script's "_end" symbol before most of the actual data, so
+   it can't be used to compute this at runtime (see main.c). Keep this
+   in sync with the map file's "Data Memory used" line if buffer sizes
+   change meaningfully. */
+uint32_t Main_GetStaticRamUsedBytes(void);
+
+/* Total RAM size in bytes (fixed by the device: kseg1_data_mem). */
+uint32_t Main_GetRamTotalBytes(void);
+
+/* Configured heap reservation in bytes (fixed at link time). */
+uint32_t Main_GetHeapReservedBytes(void);
+
+/* Approximate stack bytes in use at the moment of the call, measured as
+   the distance from the stack pointer recorded near the top of main()
+   to the address of a local variable at the current call depth. This is
+   a coarse snapshot (varies call to call), not a true high-water mark,
+   but is cheap and useful as a rough "how deep are we" indicator. */
+uint32_t Main_GetApproxStackUsedBytes(void);
+
+/* Main loop iterations observed in the most recently completed 1-second
+   window — a cheap proxy for how "busy" the cooperative main loop is. */
+uint32_t Main_GetLoopRate(void);
+
+/* Estimated CPU load percentage (0-100), self-calibrated at runtime as
+   100 * (1 - currentLoopRate / highestObservedLoopRate). Since there is
+   no RTOS/idle task, this is not a true OS-level CPU load figure — it is
+   a proxy derived from how much the main loop rate drops from its own
+   observed peak, which happens whenever polling functions (USB, TCP/IP,
+   dashboard rendering) take longer per iteration. */
+uint32_t Main_GetCpuLoadPercent(void);
+
 #endif /* MAIN_H */

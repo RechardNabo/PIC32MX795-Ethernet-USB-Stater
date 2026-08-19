@@ -34,6 +34,19 @@
 #define CONSOLE_TX_BUFFER_SIZE   1024U
 #define CONSOLE_RX_BUFFER_SIZE   128U
 
+/* Size of the rolling mirror of the most recent console output, kept so
+   the web dashboard can display a tail of what the USB CDC terminal has
+   shown (boot log lines, echoed keystrokes, etc). Independent of
+   CONSOLE_TX_BUFFER_SIZE — the TX ring is drained as bytes go out over
+   USB, but the mirror keeps a fixed-size rolling window regardless.
+
+   Kept small (rather than the ~512 bytes that would show a bit more
+   scrollback) because this target's RAM leaves only ~1KB of headroom
+   for the C call stack after the TCP/IP stack, USB, and crypto buffers —
+   every byte here comes directly out of that headroom. Increase only
+   after checking the linker's stack availability. */
+#define CONSOLE_MIRROR_SIZE      224U
+
 /* Console states */
 typedef enum
 {
@@ -60,6 +73,13 @@ bool Console_IsConnected(void);
    other modules that must keep running regardless of whether a terminal
    is attached should gate on this instead of Console_IsConnected(). */
 bool Console_IsUsbReady(void);
+
+/* Copies the most recent bytes of console output (oldest to newest) into
+   dest, up to destSize bytes. Returns the number of bytes copied. Used by
+   the web dashboard to mirror what has been printed to the USB CDC
+   terminal (boot log, echoed input), independent of whether a terminal
+   is actually attached. */
+uint32_t Console_MirrorCopy(char *dest, uint32_t destSize);
 
 /* Send a null-terminated string to the host. Returns bytes sent. */
 uint32_t Console_Print(const char *str);

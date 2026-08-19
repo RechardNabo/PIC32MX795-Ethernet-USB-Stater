@@ -50,8 +50,98 @@
 #define TMR3_PERIOD_US              1000U   /* 1ms per timer period          */
 #define TMR3_PERIODS_PER_MS         (1000U / TMR3_PERIOD_US)
 
+/* How long to hold off starting Ethernet_Tasks()/Dashboard_Tasks() after
+   boot, giving USB enumeration an uncontested head start. See the call
+   site in the main loop for why this is a fixed delay rather than a
+   gate on USB actually finishing configuration. */
+#define ETH_START_DELAY_MS         1000U
+
 /* Track console connection state for welcome message */
 static bool g_wasConnected = false;
+
+/* --------------------------------------------------------------------------
+   Resource monitoring (for the web dashboard's "MCU Resources" tab)
+   --------------------------------------------------------------------------
+   All of this is cheap: a linker-provided symbol for static RAM usage, a
+   couple of counters for loop rate / self-calibrated CPU load estimate,
+   and a stack-pointer snapshot. See main.h for accessor semantics. */
+
+/* The linker script's "_end" symbol is NOT usable here: this build uses
+   -fdata-sections, which places every global in its own named section
+   (.bss.varname, .data.varname, ...) that gets laid out by a separate,
+   XC32-internal rule positioned AFTER the script's "_end = .;" line —
+   so _end ends up pointing only ~600 bytes into RAM while the actual
+   statics (including a 64KB heap-adjacent buffer) are placed well after
+   it. Confirmed by checking the .map file's symbol table directly.
+   Static RAM usage is therefore reported as of the last build (see the
+   linker map's "Data Memory used" line) rather than computed live —
+   same approach as the flash-usage figure below. Keep in sync if
+   buffer sizes change meaningfully. */
+#define STATIC_RAM_USED_BYTES   80701U
+#define RAM_TOTAL_BYTES         0x20000U    /* kseg1_data_mem length */
+
+/* Must match the Makefile's --defsym=_min_heap_size=... (see
+   nbproject/Makefile-default.mk); the linker doesn't expose this back to
+   C code, so it's tracked here as a constant. */
+#define HEAP_RESERVED_BYTES     49152U
+
+/* Captured once, near the top of main(), before any deep call chains —
+   used as the "top of stack" reference point for the approximate
+   stack-usage snapshot. */
+static const void *g_stackTop = NULL;
+
+/* Loop-rate / self-calibrated CPU load tracking. There's no RTOS idle
+   task to measure true CPU load against, so instead we track how the
+   main loop's iteration rate droops from its own observed peak — see
+   Main_GetCpuLoadPercent() in main.h for the caveat. */
+static volatile uint32_t g_loopCounter  = 0;   /* iterations this window   */
+static uint32_t          g_loopRate     = 0;   /* iterations/sec, last window */
+static uint32_t          g_loopRateMax  = 1;   /* highest rate observed (>=1 to avoid /0) */
+
+uint32_t Main_GetStaticRamUsedBytes(void)
+{
+    return STATIC_RAM_USED_BYTES;
+}
+
+uint32_t Main_GetRamTotalBytes(void)
+{
+    return RAM_TOTAL_BYTES;
+}
+
+uint32_t Main_GetHeapReservedBytes(void)
+{
+    return HEAP_RESERVED_BYTES;
+}
+
+uint32_t Main_GetApproxStackUsedBytes(void)
+{
+    /* MIPS stack grows downward, so "used" is top-of-stack minus the
+       current (lower) address. Taking the address of a local variable
+       here approximates the stack pointer at this call depth. */
+    volatile int marker = 0;
+    const void *current = (const void *)&marker;
+
+    if ((g_stackTop == NULL) || (current >= g_stackTop))
+    {
+        return 0U;  /* not yet captured, or something's off — don't report garbage */
+    }
+    return (uint32_t)((const char *)g_stackTop - (const char *)current);
+}
+
+uint32_t Main_GetLoopRate(void)
+{
+    return g_loopRate;
+}
+
+uint32_t Main_GetCpuLoadPercent(void)
+{
+    if (g_loopRate >= g_loopRateMax)
+    {
+        return 0U;  /* at or above peak rate observed so far -> ~0% extra load */
+    }
+    uint32_t load = 100U - ((g_loopRate * 100U) / g_loopRateMax);
+    return (load > 100U) ? 100U : load;
+}
 
 /* --------------------------------------------------------------------------
    Console Service — processes welcome banner and echo.
@@ -394,6 +484,13 @@ int main ( void )
     uint8_t  step      = 0;
     uint32_t timeAccum = 0;
     uint32_t lastTick  = 0;
+    uint32_t loopRateAccum = 0;  /* ms elapsed toward the next 1s loop-rate sample */
+
+    /* Reference point for Main_GetApproxStackUsedBytes() — captured here,
+       close to the top of main(), so it represents "stack depth with
+       nothing but main() on it" as the zero point. */
+    volatile int stackTopMarker = 0;
+    g_stackTop = (const void *)&stackTopMarker;
 
     /* Main loop — non-blocking.
        USB and Ethernet are polled every iteration at maximum speed.
@@ -420,17 +517,25 @@ int main ( void )
         Console_Service();
 
         /* --- Ethernet TCP/IP ---
-           Only run once USB enumeration/configuration completes, so
-           TCPIP_STACK_Task() can't starve USB polling during enumeration.
-           Gate on Console_IsUsbReady() (USB configured) rather than
-           Console_IsConnected() (which also requires DTR/terminal open) —
-           otherwise Ethernet would stop running the moment the USB CDC
-           terminal is closed, since it's not required for networking. */
-        if (Console_IsUsbReady())
+           Held off for the first ETH_START_DELAY_MS after boot so USB
+           enumeration gets a completely uncontested head start (the
+           original motivation for gating this at all: TCPIP_STACK_Task()
+           can otherwise starve USB polling while the host is enumerating
+           the device). A fixed delay is used instead of gating on USB
+           actually finishing enumeration/configuration — Ethernet has no
+           functional dependency on USB, and gating on USB state made
+           networking hang indefinitely on hosts where the USB CDC driver
+           fails to fully configure (observed as Windows Device Manager
+           Code 10 on the USB Serial port after some reflashes), even
+           though the board and network side were otherwise fine. */
+        if (g_msTick >= ETH_START_DELAY_MS)
         {
             Ethernet_Tasks();
             Dashboard_Tasks();
         }
+
+        /* --- Loop-rate sampling (for the dashboard's CPU load estimate) --- */
+        g_loopCounter++;
 
         /* --- 1ms tick (non-blocking) --- */
         if (TMR3_MsTick())
@@ -438,6 +543,21 @@ int main ( void )
             uint32_t elapsed = g_msTick - lastTick;
             lastTick = g_msTick;
             timeAccum += elapsed;
+
+            /* Loop-rate sample — every 1000ms, snapshot how many main loop
+               iterations happened, reset the counter, and track the
+               highest rate seen so far (used as the CPU-load baseline). */
+            loopRateAccum += elapsed;
+            if (loopRateAccum >= 1000U)
+            {
+                loopRateAccum = 0U;
+                g_loopRate    = g_loopCounter;
+                g_loopCounter = 0U;
+                if (g_loopRate > g_loopRateMax)
+                {
+                    g_loopRateMax = g_loopRate;
+                }
+            }
 
             /* Switch debouncing — sample every DEBOUNCE_SAMPLE_MS */
             static uint32_t debounceAccum = 0;
