@@ -75,4 +75,30 @@ uint32_t Main_GetLoopRate(void);
    dashboard rendering) take longer per iteration. */
 uint32_t Main_GetCpuLoadPercent(void);
 
+/* --------------------------------------------------------------------------
+   Switch hold-to-reset
+   --------------------------------------------------------------------------
+   SW1 (RD6), when held continuously for MAIN_RESET_HOLD_THRESHOLD_MS,
+   triggers a board software reset. A visual warning (all LEDs
+   fast-blink) starts at MAIN_RESET_WARN_MS to give the user a chance to
+   release the switch before the reset fires. */
+
+#define MAIN_RESET_HOLD_THRESHOLD_MS  5000U   /* 5 sec hold → reset       */
+#define MAIN_RESET_WARN_MS            3000U   /* 3 sec → start LED warning */
+
+/* Milliseconds SW1 has been held continuously (0 when released). */
+uint32_t Main_GetResetSwitchHoldMs(void);
+
+/* Threshold constant accessor (for the dashboard API). */
+uint32_t Main_GetResetHoldThresholdMs(void);
+
+/* Request a delayed board reset (used by the /api/reset endpoint).
+   Sets a flag; the main loop performs the actual reset ~500ms later
+   to give the TCP stack time to flush any pending HTTP response. */
+void Main_RequestReset(void);
+
+/* Perform an immediate software reset via the PIC32 RSWRST register.
+   Does not return. */
+void Main_TriggerReset(void);
+
 #endif /* MAIN_H */

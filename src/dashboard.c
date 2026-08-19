@@ -134,8 +134,21 @@ static const char DASH_SHELL[] =
     "<tr><td>Filesystem</td><td>SYS_FS + FAT registered (no media mounted)</td></tr>"
     "<tr><td>Crypto</td><td>wolfCrypt WCCB initialized</td></tr>"
     "<tr><td>RTOS</td><td>FreeRTOS linked, scheduler NOT started \u2014 bare-metal cooperative main loop</td></tr>"
-    "<tr><td>Switches</td><td>SW1/SW2/SW3 (RD6/RD7/RD13), software-debounced</td></tr>"
+    "<tr><td>Switches</td><td>SW1/SW2/SW3 (RD6/RD7/RD13), software-debounced. Hold SW1 5s to reset (LEDs fast-blink at 3s as warning)</td></tr>"
     "<tr><td>LEDs</td><td>LED1-3, 3 display modes, 4 speed steps</td></tr>"
+    "</table>"
+    "<h2 style=\"margin-top:18px;font-size:15px\">REST API</h2>"
+    "<p class=\"sub\">Resource-oriented JSON endpoints (HTTP/1.0, Content-Type: application/json)</p>"
+    "<table class=\"cfg\">"
+    "<tr><td>GET /api/status</td><td>Full status (link, IP, uptime, switches, LEDs, resources, console tail)</td></tr>"
+    "<tr><td>GET /api/leds</td><td>LED state: {mode, speed, allOn}</td></tr>"
+    "<tr><td>GET /api/switches</td><td>Switch state: {sw1, sw2, sw3, resetHoldMs, resetThresholdMs}</td></tr>"
+    "<tr><td>GET /api/resources</td><td>MCU resources: {ramUsed, ramTotal, ramPct, heapReserved, flashUsed, flashTotal, flashPct, stackUsed, loopRate, cpuLoad}</td></tr>"
+    "<tr><td>GET /api/network</td><td>Network: {link, ip, uptime, rx, tx}</td></tr>"
+    "<tr><td>GET /api/reset</td><td>Triggers a delayed board reset (~500ms). Returns {reset:true}</td></tr>"
+    "<tr><td>GET /cmd?cmd=toggle</td><td>Toggle all LEDs on/off (legacy, returns 204)</td></tr>"
+    "<tr><td>GET /cmd?cmd=mode</td><td>Cycle LED display mode (legacy, returns 204)</td></tr>"
+    "<tr><td>GET /cmd?cmd=speed</td><td>Cycle LED speed (legacy, returns 204)</td></tr>"
     "</table>"
     "</section>"
     "</main>"
@@ -210,12 +223,18 @@ typedef enum
 {
     DASH_SEG_NONE = 0,
     DASH_SEG_SHELL,        /* GET /            -> DASH_SHELL (flash)        */
-    DASH_SEG_JSON_HEAD,    /* GET /api/status  -> DASH_JSON_HEAD (flash)     */
+    DASH_SEG_JSON_HEAD,    /* GET /api/...     -> DASH_JSON_HEAD (flash)     */
     DASH_SEG_JSON_BODY,    /*                     dynamic fields (RAM)      */
     DASH_SEG_JSON_CONSOLE, /*                     escaped console tail      */
     DASH_SEG_JSON_FOOT,    /*                     DASH_JSON_FOOT (flash)    */
     DASH_SEG_CMD_ACK       /* GET /cmd?cmd=... -> DASH_CMD_ACK (flash)       */
 } DashSegment;
+
+/* Function pointer for building the dynamic JSON body into g_scratch.
+   Set at route time, called when DASH_SEG_JSON_BODY starts. */
+typedef size_t (*JsonBodyBuilder)(void);
+static JsonBodyBuilder g_jsonBodyBuilder  = NULL;
+static bool            g_jsonHasConsole   = false;
 
 static DashSegment  g_dashSeg     = DASH_SEG_NONE;
 
@@ -267,7 +286,7 @@ static size_t Dashboard_BuildJsonBody(void)
        "end of .text/.rodata" symbol (this linker script doesn't provide
        one) — reported as of the last build instead. Keep in sync with
        the map file if buffer sizes change meaningfully. */
-    const uint32_t flashUsed  = 231176U;
+    const uint32_t flashUsed  = 239883U;
     const uint32_t flashTotal = 532480U;
     uint32_t flashPct = (flashUsed * 100U) / flashTotal;
 
@@ -306,6 +325,113 @@ static size_t Dashboard_BuildJsonBody(void)
     }
 
     return (size_t)len;
+}
+
+/* --------------------------------------------------------------------------
+   RESTful API JSON body builders — one per resource-oriented endpoint.
+   Each writes into g_scratch and returns the length. These are set as
+   g_jsonBodyBuilder at route time.
+   -------------------------------------------------------------------------- */
+
+/* GET /api/leds — LED state and control */
+static size_t Dashboard_BuildLedsJson(void)
+{
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-truncation"
+    int len = snprintf(g_scratch, sizeof(g_scratch),
+        "{\"mode\":\"%s\",\"speed\":%lu,\"allOn\":%d}",
+        Main_GetLedModeName(),
+        (unsigned long)Main_GetSpeedMs(),
+        Main_GetAllLedsOn() ? 1 : 0);
+    #pragma GCC diagnostic pop
+    if ((len < 0) || ((size_t)len >= sizeof(g_scratch)))
+    {
+        len = (int)sizeof(g_scratch) - 1;
+    }
+    return (size_t)len;
+}
+
+/* GET /api/switches — switch state + reset hold progress */
+static size_t Dashboard_BuildSwitchesJson(void)
+{
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-truncation"
+    int len = snprintf(g_scratch, sizeof(g_scratch),
+        "{\"sw1\":%d,\"sw2\":%d,\"sw3\":%d,"
+        "\"resetHoldMs\":%lu,\"resetThresholdMs\":%lu}",
+        (SWITCH1_Get() == SWITCH1_STATE_PRESSED) ? 1 : 0,
+        (SWITCH2_Get() == SWITCH1_STATE_PRESSED) ? 1 : 0,
+        (SWITCH3_Get() == SWITCH1_STATE_PRESSED) ? 1 : 0,
+        (unsigned long)Main_GetResetSwitchHoldMs(),
+        (unsigned long)Main_GetResetHoldThresholdMs());
+    #pragma GCC diagnostic pop
+    if ((len < 0) || ((size_t)len >= sizeof(g_scratch)))
+    {
+        len = (int)sizeof(g_scratch) - 1;
+    }
+    return (size_t)len;
+}
+
+/* GET /api/resources — MCU resource metrics */
+static size_t Dashboard_BuildResourcesJson(void)
+{
+    uint32_t ramUsed    = Main_GetStaticRamUsedBytes();
+    uint32_t ramTotal   = Main_GetRamTotalBytes();
+    uint32_t ramPct     = (ramTotal > 0U) ? ((ramUsed * 100U) / ramTotal) : 0U;
+    const uint32_t flashUsed  = 239883U;
+    const uint32_t flashTotal = 532480U;
+    uint32_t flashPct = (flashUsed * 100U) / flashTotal;
+
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-truncation"
+    int len = snprintf(g_scratch, sizeof(g_scratch),
+        "{\"ramUsed\":%lu,\"ramTotal\":%lu,\"ramPct\":%lu,"
+        "\"heapReserved\":%lu,"
+        "\"flashUsed\":%lu,\"flashTotal\":%lu,\"flashPct\":%lu,"
+        "\"stackUsed\":%lu,\"loopRate\":%lu,\"cpuLoad\":%lu}",
+        (unsigned long)ramUsed, (unsigned long)ramTotal, (unsigned long)ramPct,
+        (unsigned long)Main_GetHeapReservedBytes(),
+        (unsigned long)flashUsed, (unsigned long)flashTotal, (unsigned long)flashPct,
+        (unsigned long)Main_GetApproxStackUsedBytes(),
+        (unsigned long)Main_GetLoopRate(),
+        (unsigned long)Main_GetCpuLoadPercent());
+    #pragma GCC diagnostic pop
+    if ((len < 0) || ((size_t)len >= sizeof(g_scratch)))
+    {
+        len = (int)sizeof(g_scratch) - 1;
+    }
+    return (size_t)len;
+}
+
+/* GET /api/network — network status */
+static size_t Dashboard_BuildNetworkJson(void)
+{
+    char ipBuf[16];
+    (void)Ethernet_GetIpString(ipBuf, sizeof(ipBuf));
+
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-truncation"
+    int len = snprintf(g_scratch, sizeof(g_scratch),
+        "{\"link\":%d,\"ip\":\"%s\",\"uptime\":%lu,\"rx\":%u,\"tx\":%u}",
+        Ethernet_IsLinkUp() ? 1 : 0,
+        ipBuf,
+        (unsigned long)(Main_GetUptimeMs() / 1000U),
+        (unsigned)ETHFRMRXOK,
+        (unsigned)ETHFRMTXOK);
+    #pragma GCC diagnostic pop
+    if ((len < 0) || ((size_t)len >= sizeof(g_scratch)))
+    {
+        len = (int)sizeof(g_scratch) - 1;
+    }
+    return (size_t)len;
+}
+
+/* GET /api/reset — ack before the delayed reset fires */
+static size_t Dashboard_BuildResetJson(void)
+{
+    const char body[] = "{\"reset\":true}";
+    memcpy(g_scratch, body, sizeof(body) - 1);
+    return sizeof(body) - 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -349,7 +475,7 @@ static void Dashboard_StartSegment(DashSegment seg)
             break;
 
         case DASH_SEG_JSON_BODY:
-            g_dashSegLen  = Dashboard_BuildJsonBody();
+            g_dashSegLen  = g_jsonBodyBuilder();
             g_dashSegData = g_scratch;
             break;
 
@@ -539,7 +665,14 @@ void Dashboard_Tasks(void)
                     break;
 
                 case DASH_SEG_JSON_BODY:
-                    Dashboard_StartConsoleSeg();
+                    if (g_jsonHasConsole)
+                    {
+                        Dashboard_StartConsoleSeg();
+                    }
+                    else
+                    {
+                        Dashboard_StartSegment(DASH_SEG_JSON_FOOT);
+                    }
                     break;
 
                 case DASH_SEG_JSON_CONSOLE:
@@ -589,9 +722,53 @@ void Dashboard_Tasks(void)
 
     /* Route on the request line. Order matters: check the specific
        routes before falling back to the SPA shell for everything else
-       (including plain "GET / HTTP/1.1"). */
+       (including plain "GET / HTTP/1.1").
+
+       RESTful API endpoints (resource-oriented, no console tail):
+         GET /api/leds       -> {"mode":"Running","speed":100,"allOn":false}
+         GET /api/switches   -> {"sw1":0,"sw2":0,"sw3":0,"resetHoldMs":0,...}
+         GET /api/resources  -> {"ramUsed":...,"ramTotal":...,...}
+         GET /api/network    -> {"link":1,"ip":"...","uptime":...,"rx":...,"tx":...}
+         GET /api/reset      -> {"reset":true}  (triggers a delayed board reset)
+
+       Legacy endpoints (kept for the SPA):
+         GET /api/status     -> full status JSON with console tail
+         GET /cmd?cmd=...    -> 204 ack (LED control actions) */
     if (strstr(reqBuf, "/api/status") != NULL)
     {
+        g_jsonBodyBuilder = Dashboard_BuildJsonBody;
+        g_jsonHasConsole  = true;
+        Dashboard_StartSegment(DASH_SEG_JSON_HEAD);
+    }
+    else if (strstr(reqBuf, "/api/leds") != NULL)
+    {
+        g_jsonBodyBuilder = Dashboard_BuildLedsJson;
+        g_jsonHasConsole  = false;
+        Dashboard_StartSegment(DASH_SEG_JSON_HEAD);
+    }
+    else if (strstr(reqBuf, "/api/switches") != NULL)
+    {
+        g_jsonBodyBuilder = Dashboard_BuildSwitchesJson;
+        g_jsonHasConsole  = false;
+        Dashboard_StartSegment(DASH_SEG_JSON_HEAD);
+    }
+    else if (strstr(reqBuf, "/api/resources") != NULL)
+    {
+        g_jsonBodyBuilder = Dashboard_BuildResourcesJson;
+        g_jsonHasConsole  = false;
+        Dashboard_StartSegment(DASH_SEG_JSON_HEAD);
+    }
+    else if (strstr(reqBuf, "/api/network") != NULL)
+    {
+        g_jsonBodyBuilder = Dashboard_BuildNetworkJson;
+        g_jsonHasConsole  = false;
+        Dashboard_StartSegment(DASH_SEG_JSON_HEAD);
+    }
+    else if (strstr(reqBuf, "/api/reset") != NULL)
+    {
+        Main_RequestReset();
+        g_jsonBodyBuilder = Dashboard_BuildResetJson;
+        g_jsonHasConsole  = false;
         Dashboard_StartSegment(DASH_SEG_JSON_HEAD);
     }
     else if (strstr(reqBuf, "cmd=") != NULL)

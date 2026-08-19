@@ -77,7 +77,7 @@ static bool g_wasConnected = false;
    linker map's "Data Memory used" line) rather than computed live —
    same approach as the flash-usage figure below. Keep in sync if
    buffer sizes change meaningfully. */
-#define STATIC_RAM_USED_BYTES   80701U
+#define STATIC_RAM_USED_BYTES   80729U
 #define RAM_TOTAL_BYTES         0x20000U    /* kseg1_data_mem length */
 
 /* Must match the Makefile's --defsym=_min_heap_size=... (see
@@ -141,6 +141,59 @@ uint32_t Main_GetCpuLoadPercent(void)
     }
     uint32_t load = 100U - ((g_loopRate * 100U) / g_loopRateMax);
     return (load > 100U) ? 100U : load;
+}
+
+/* --------------------------------------------------------------------------
+   Switch hold-to-reset
+   --------------------------------------------------------------------------
+   SW1 (RD6) held continuously for 5 seconds triggers a software reset.
+   At 3 seconds, all LEDs start fast-blinking as a visual warning. */
+
+/* g_msTick is defined further down (near the TMR3 section), but
+   Main_RequestReset() needs it here, so forward-declare it. */
+static volatile uint32_t g_msTick;
+
+static uint32_t g_resetHoldMs     = 0U;   /* continuous SW1 hold time      */
+static bool     g_resetWarning    = false; /* LED warning active           */
+
+/* Delayed reset: /api/reset sets g_resetRequested, and the main loop
+   performs the actual reset after RESET_DELAY_MS to let the TCP stack
+   flush the HTTP response. */
+#define RESET_DELAY_MS            500U
+static volatile bool     g_resetRequested  = false;
+static uint32_t          g_resetRequestTime = 0U;
+
+uint32_t Main_GetResetSwitchHoldMs(void)
+{
+    return g_resetHoldMs;
+}
+
+uint32_t Main_GetResetHoldThresholdMs(void)
+{
+    return MAIN_RESET_HOLD_THRESHOLD_MS;
+}
+
+void Main_RequestReset(void)
+{
+    g_resetRequested  = true;
+    g_resetRequestTime = g_msTick;
+}
+
+void Main_TriggerReset(void)
+{
+    /* PIC32MX RSWRST register (0xBF801250): write any value, then read
+       it back to trigger a software reset. The read is what actually
+       fires the reset. */
+    if (Console_IsConnected())
+    {
+        Console_Println("");
+        Console_Println(">>> BOARD RESET TRIGGERED <<<");
+    }
+    __builtin_disable_interrupts();
+    volatile uint32_t *pRSWRST = (volatile uint32_t *)0xBF801250;
+    *pRSWRST = 0x12345678U;
+    (void)*pRSWRST;  /* reading triggers the reset */
+    while (1) { }    /* should never reach here */
 }
 
 /* --------------------------------------------------------------------------
@@ -534,6 +587,19 @@ int main ( void )
             Dashboard_Tasks();
         }
 
+        /* --- Delayed reset (from /api/reset) ---
+           Gives the TCP stack ~500ms to flush the HTTP response before
+           the actual reset fires. */
+        if (g_resetRequested &&
+            (g_msTick - g_resetRequestTime) >= RESET_DELAY_MS)
+        {
+            if (Console_IsConnected())
+            {
+                Console_Println("API reset — resetting board...");
+            }
+            Main_TriggerReset();
+        }
+
         /* --- Loop-rate sampling (for the dashboard's CPU load estimate) --- */
         g_loopCounter++;
 
@@ -637,6 +703,61 @@ int main ( void )
                     {
                         Console_Println(g_allLedsOn ? "All LEDs ON" : "All LEDs OFF");
                     }
+                }
+
+                /* --- SW1 hold-to-reset tracking ---
+                   Accumulate time while SW1's debounced state is PRESSED.
+                   At MAIN_RESET_WARN_MS, start fast-blinking all LEDs as
+                   a visual warning. At MAIN_RESET_HOLD_THRESHOLD_MS,
+                   trigger a board reset. */
+                if (g_switches[0].stableState == SWITCH1_STATE_PRESSED)
+                {
+                    g_resetHoldMs += DEBOUNCE_SAMPLE_MS;
+
+                    if (g_resetHoldMs >= MAIN_RESET_WARN_MS && !g_resetWarning)
+                    {
+                        g_resetWarning = true;
+                        if (Console_IsConnected())
+                        {
+                            Console_Println("WARNING: Hold SW1 to reset, release to cancel...");
+                        }
+                    }
+
+                    /* Fast-blink all LEDs during the warning phase */
+                    if (g_resetWarning)
+                    {
+                        static uint32_t warnBlinkAccum = 0;
+                        static bool     warnLedState   = false;
+                        warnBlinkAccum += DEBOUNCE_SAMPLE_MS;
+                        if (warnBlinkAccum >= 100U)
+                        {
+                            warnBlinkAccum = 0;
+                            warnLedState = !warnLedState;
+                            if (warnLedState) { LEDs_AllOn();  }
+                            else              { LEDs_AllOff(); }
+                        }
+                    }
+
+                    if (g_resetHoldMs >= MAIN_RESET_HOLD_THRESHOLD_MS)
+                    {
+                        if (Console_IsConnected())
+                        {
+                            Console_Println("SW1 held 5s — resetting board...");
+                        }
+                        Main_TriggerReset();
+                    }
+                }
+                else
+                {
+                    if (g_resetWarning)
+                    {
+                        g_resetWarning = false;
+                        if (Console_IsConnected())
+                        {
+                            Console_Println("Reset cancelled.");
+                        }
+                    }
+                    g_resetHoldMs = 0U;
                 }
             }
 
