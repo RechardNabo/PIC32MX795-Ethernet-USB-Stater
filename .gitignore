@@ -24,3 +24,4 @@ TCP_IP_Files/
 # Backups
 **/src_backup_*/
 **/*.bak
+MPLABXLog.xml

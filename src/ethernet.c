@@ -357,6 +357,22 @@ void Ethernet_Tasks(void)
                 Console_Println(g_ipBuf);
                 Console_Print("[ETH] Echo server on port ");
                 /* Print port number */
+
+                /* Debug: print ETH registers */
+                {
+                    char dbgBuf[64];
+                    (void)snprintf(dbgBuf, sizeof(dbgBuf),
+                                   "[ETH] FRMRXOK=%u FRMTXOK=%u",
+                                   (unsigned)ETHFRMRXOK,
+                                   (unsigned)ETHFRMTXOK);
+                    Console_Println(dbgBuf);
+                    (void)snprintf(dbgBuf, sizeof(dbgBuf),
+                                   "[ETH] DEVCFG3=0x%08x FMIIEN=%u FETHIO=%u",
+                                   (unsigned)DEVCFG3,
+                                   (unsigned)((DEVCFG3 >> 24) & 1U),
+                                   (unsigned)((DEVCFG3 >> 25) & 1U));
+                    Console_Println(dbgBuf);
+                }
                 char portBuf[8];
                 (void)snprintf(portBuf, sizeof(portBuf), "%u", ETH_ECHO_PORT);
                 Console_Println(portBuf);

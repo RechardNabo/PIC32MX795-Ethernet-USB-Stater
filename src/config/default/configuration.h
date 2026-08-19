@@ -367,16 +367,15 @@ extern "C" {
 #define TCPIP_IF_ETHMAC
 
 #define TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX0              "MCHPBOARD_E"
-#define TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0               0
+#define TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0               "02:00:00:00:00:01"
 
-#define TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0         "192.168.0.151"
+#define TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0         "192.168.1.151"
 #define TCPIP_NETWORK_DEFAULT_IP_MASK_IDX0            "255.255.255.0"
-#define TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0            "192.168.0.1"
-#define TCPIP_NETWORK_DEFAULT_DNS_IDX0                "192.168.0.1"
+#define TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0            "192.168.1.1"
+#define TCPIP_NETWORK_DEFAULT_DNS_IDX0                "192.168.1.1"
 #define TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX0         "0.0.0.0"
 #define TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX0         "full"
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX0            \
-                                                    TCPIP_NETWORK_CONFIG_DHCP_CLIENT_ON |\
                                                     TCPIP_NETWORK_CONFIG_DNS_CLIENT_ON |\
                                                     TCPIP_NETWORK_CONFIG_IP_STATIC
                                                     

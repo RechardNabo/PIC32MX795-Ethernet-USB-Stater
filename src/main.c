@@ -28,6 +28,8 @@
 #include "definitions.h"                // SYS function prototypes
 #include "console.h"                    // USB CDC console (Project 3)
 #include "ethernet.h"                   // Ethernet TCP/IP (Project 4)
+#include "main.h"                       // Accessors for the web dashboard
+#include "dashboard.h"                  // Web IoT dashboard (Project 5)
 
 /* --------------------------------------------------------------------------
    LED Timer (TMR3) — Polling Mode
@@ -229,6 +231,63 @@ static LedMode   g_ledMode    = LED_MODE_RUNNING;
 static uint8_t   g_speedIndex = 2;       /* Default: 100ms                 */
 static bool      g_allLedsOn  = false;   /* SW3 override: all on          */
 
+static void LEDs_AllOff(void);
+static void LEDs_AllOn(void);
+
+/* --------------------------------------------------------------------------
+   Accessors for other modules (e.g. the web dashboard) to read/control
+   LED state without exposing the static variables directly.
+   -------------------------------------------------------------------------- */
+uint32_t Main_GetUptimeMs(void)
+{
+    return g_msTick;
+}
+
+const char *Main_GetLedModeName(void)
+{
+    switch (g_ledMode)
+    {
+        case LED_MODE_RUNNING:   return "Running";
+        case LED_MODE_ALTERNATE: return "Alternate";
+        case LED_MODE_ALL_BLINK: return "All Blink";
+        default:                 return "Unknown";
+    }
+}
+
+uint32_t Main_GetSpeedMs(void)
+{
+    return g_speedTable[g_speedIndex];
+}
+
+bool Main_GetAllLedsOn(void)
+{
+    return g_allLedsOn;
+}
+
+void Main_ToggleAllLeds(void)
+{
+    g_allLedsOn = !g_allLedsOn;
+    if (g_allLedsOn)
+    {
+        LEDs_AllOn();
+    }
+    else
+    {
+        LEDs_AllOff();
+    }
+}
+
+void Main_CycleLedMode(void)
+{
+    g_ledMode   = (LedMode)((g_ledMode + 1) % LED_MODE_COUNT);
+    g_allLedsOn = false;
+}
+
+void Main_CycleSpeed(void)
+{
+    g_speedIndex = (uint8_t)((g_speedIndex + 1U) % SPEED_COUNT);
+}
+
 static void LEDs_AllOff(void)
 {
     LED1_Off();
@@ -328,6 +387,9 @@ int main ( void )
     /* Initialize Ethernet TCP/IP module (Project 4 — uses console for debug) */
     Ethernet_Initialize();
 
+    /* Initialize the web IoT dashboard (Project 5 — depends on Ethernet) */
+    Dashboard_Initialize();
+
     uint32_t speedMs   = g_speedTable[g_speedIndex];
     uint8_t  step      = 0;
     uint32_t timeAccum = 0;
@@ -358,11 +420,16 @@ int main ( void )
         Console_Service();
 
         /* --- Ethernet TCP/IP ---
-           Only run after USB console is configured, so TCPIP_STACK_Task()
-           can't starve USB polling during enumeration. */
-        if (Console_IsConnected())
+           Only run once USB enumeration/configuration completes, so
+           TCPIP_STACK_Task() can't starve USB polling during enumeration.
+           Gate on Console_IsUsbReady() (USB configured) rather than
+           Console_IsConnected() (which also requires DTR/terminal open) —
+           otherwise Ethernet would stop running the moment the USB CDC
+           terminal is closed, since it's not required for networking. */
+        if (Console_IsUsbReady())
         {
             Ethernet_Tasks();
+            Dashboard_Tasks();
         }
 
         /* --- 1ms tick (non-blocking) --- */
@@ -453,7 +520,11 @@ int main ( void )
                 }
             }
 
-            /* LED pattern update (every speedMs) */
+            /* LED pattern update (every speedMs).
+               Re-read from g_speedIndex each time (rather than relying on the
+               cached local speedMs) so external changes, e.g. from the web
+               dashboard's Main_CycleSpeed(), take effect immediately. */
+            speedMs = g_speedTable[g_speedIndex];
             if (timeAccum >= speedMs)
             {
                 timeAccum = 0;

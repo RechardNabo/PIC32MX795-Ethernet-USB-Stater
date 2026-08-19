@@ -88,11 +88,12 @@
    FMIIEN=0 (RMII mode) for the DP83848 PHY on the PIC32 Ethernet
    Starter Kit.  Write the entire config word directly.
    Bit layout: USERID[15:0], FSRSSEL[18:16], [23:19]=1,
-   FMIIEN[24]=0(RMII), FETHIO[25]=1(default), FCANIO[26]=1,
+   FMIIEN[24]=0(RMII), FETHIO[25]=0(alternate — RB0-RB7 per board
+   schematic / plib_gpio.c pin map), FCANIO[26]=1,
    [29:27]=1, FUSBIDIO[30]=1, FVBUSONIO[31]=1
-   => 0xFEFFFFFE (USERID=0xFFFE, FSRSSEL=7, FMIIEN=0, rest=1) */
+   => 0xFCFFFFFE (USERID=0xFFFE, FSRSSEL=7, FMIIEN=0, FETHIO=0, rest=1) */
 __attribute__((section(".config_BFC02FF0"), used))
-const uint32_t __DEVCFG3_manual = 0xFEFFFFFE;
+const uint32_t __DEVCFG3_manual = 0xFCFFFFFE;
 
 
 

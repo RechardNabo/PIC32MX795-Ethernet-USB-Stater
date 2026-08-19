@@ -161,7 +161,7 @@ static DRV_ETHPHY_RESULT DRV_EXTPHY_MIIConfigure(const DRV_ETHPHY_OBJECT_BASE* p
                 // OK
             }
 
-            // done    
+            // done
             res = DRV_ETHPHY_RES_OK;
             break;
 

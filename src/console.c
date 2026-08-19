@@ -430,6 +430,15 @@ void Console_Tasks(void)
     }
 }
 
+bool Console_IsUsbReady(void)
+{
+    /* True as soon as USB enumeration/configuration completes, regardless
+       of whether a terminal has the COM port open (DTR). Modules that must
+       keep running independent of a terminal (e.g. Ethernet) should use
+       this instead of Console_IsConnected(). */
+    return (g_consoleState == CONSOLE_STATE_READY && g_usbConfigured);
+}
+
 bool Console_IsConnected(void)
 {
     /* True when USB is configured AND the host has the COM port open

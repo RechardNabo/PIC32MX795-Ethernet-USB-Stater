@@ -50,8 +50,16 @@ void Console_Initialize(void);
 /* Call periodically from the main loop. Manages USB CDC state machine. */
 void Console_Tasks(void);
 
-/* Returns true if the USB host has configured the CDC device (COM port open). */
+/* Returns true if the USB host has configured the CDC device AND has the
+   COM port open (DTR active). Use this to gate console-only behavior
+   (welcome banner, echo) that should only run while a terminal is open. */
 bool Console_IsConnected(void);
+
+/* Returns true as soon as USB enumeration/configuration completes, even if
+   no terminal has opened the COM port yet (DTR not required). Ethernet and
+   other modules that must keep running regardless of whether a terminal
+   is attached should gate on this instead of Console_IsConnected(). */
+bool Console_IsUsbReady(void);
 
 /* Send a null-terminated string to the host. Returns bytes sent. */
 uint32_t Console_Print(const char *str);
